@@ -1,2835 +1,979 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html b:css='false' expr:lang='data:blog.locale.language' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
-<head>
-  <meta content='width=device-width, initial-scale=1' name='viewport'/>
-  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
-  
-  <!-- Font Kartun Google Fonts -->
-  <link href='https://fonts.googleapis.com' rel='preconnect'/>
-  <link crossorigin='crossorigin' href='https://fonts.gstatic.com' rel='preconnect'/>
-  <link href='https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap' rel='stylesheet'/>
-
-  <!-- SEO Judul Halaman Otomatis -->
-  <b:if cond='data:blog.pageType == &quot;index&quot;'>
-    <title><data:blog.pageTitle/></title>
-  <b:else/>
-    <b:if cond='data:blog.pageType != &quot;error_page&quot;'>
-      <title><data:blog.pageName/> - <data:blog.title/></title>
-    <b:else/>
-      <title>404 Halaman Tidak Ditemukan - <data:blog.title/></title>
-    </b:if>
-  </b:if>
-
-  <!-- Meta Deskripsi & Canonical URL -->
-  <b:if cond='data:blog.metaDescription'>
+  <head>
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
     <meta expr:content='data:blog.metaDescription' name='description'/>
-  <b:else/>
-    <b:if cond='data:blog.pageType == &quot;item&quot;'>
-      <meta expr:content='data:post.snippet' name='description'/>
-    </b:if>
-  </b:if>
-  <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
-
-  <!-- Open Graph & Social Media Meta Tags -->
-  <meta expr:content='data:blog.pageName ? data:blog.pageName : data:blog.title' property='og:title'/>
-  <meta expr:content='data:blog.canonicalUrl' property='og:url'/>
-  <meta expr:content='data:blog.title' property='og:site_name'/>
-  <b:if cond='data:blog.pageType == &quot;item&quot;'>
-    <meta content='article' property='og:type'/>
-    <b:if cond='data:post.firstImageUrl'>
-      <meta expr:content='data:post.firstImageUrl' property='og:image'/>
-      <meta expr:content='data:post.firstImageUrl' name='twitter:image'/>
-    <b:elseif cond='data:blog.metaImage'/>
-      <meta expr:content='data:blog.metaImage' property='og:image'/>
-      <meta expr:content='data:blog.metaImage' name='twitter:image'/>
-    </b:if>
-  <b:else/>
+    <meta expr:content='data:blog.canonicalUrl' property='og:url'/>
+    <meta expr:content='data:blog.title' property='og:site_name'/>
+    <meta expr:content='data:blog.pageTitle' property='og:title'/>
     <meta content='website' property='og:type'/>
-    <b:if cond='data:blog.metaImage'>
-      <meta expr:content='data:blog.metaImage' property='og:image'/>
-      <meta expr:content='data:blog.metaImage' name='twitter:image'/>
-    </b:if>
-  </b:if>
-  <meta content='summary_large_image' name='twitter:card'/>
-
-  <!-- Schema.org JSON-LD Structured Data -->
-  <b:if cond='data:blog.pageType == &quot;item&quot;'>
-    <script type='application/ld+json'>
-    {
-      &quot;@context&quot;: &quot;https://schema.org&quot;,
-      &quot;@type&quot;: &quot;BlogPosting&quot;,
-      &quot;mainEntityOfPage&quot;: {
-        &quot;@type&quot;: &quot;WebPage&quot;,
-        &quot;@id&quot;: &quot;<data:blog.canonicalUrl.jsonEscape/>&quot;
-      },
-      &quot;headline&quot;: &quot;<data:blog.pageName.jsonEscape/>&quot;,
-      &quot;description&quot;: &quot;<b:if cond='data:blog.metaDescription'><data:blog.metaDescription.jsonEscape/><b:else/><data:post.snippet.jsonEscape/></b:if>&quot;,
-      &quot;datePublished&quot;: &quot;<data:post.date.iso8601/>&quot;,
-      &quot;dateModified&quot;: &quot;<data:post.lastUpdated.iso8601/>&quot;,
-      <b:if cond='data:post.firstImageUrl'>
-      &quot;image&quot;: &quot;<data:post.firstImageUrl.jsonEscape/>&quot;,
-      </b:if>
-      &quot;author&quot;: {
-        &quot;@type&quot;: &quot;Person&quot;,
-        &quot;name&quot;: &quot;<data:post.author.jsonEscape/>&quot;
-      },
-      &quot;publisher&quot;: {
-        &quot;@type&quot;: &quot;Organization&quot;,
-        &quot;name&quot;: &quot;<data:blog.title.jsonEscape/>&quot;
-      }
-    }
-    </script>
-  </b:if>
-
-  <b:include data='blog' name='all-head-content'/>
-
-  <!-- Early Theme Detection Script (Anti-Flicker) -->
-  <script>
-    try {
-      if (localStorage.getItem(&#39;theme-preference&#39;) === &#39;dark&#39;) {
-        document.documentElement.classList.add(&#39;dark-mode-preload&#39;);
-      }
-    } catch (e) {}
-  </script>
-  
-  <b:skin><![CDATA[
-    /* Modern editorial blog system */
-    :root {
-      --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-xs: .78rem; --font-sm: .92rem; --font-base: 1rem; --font-md: 1.15rem; --font-lg: 1.45rem; --font-xl: 1.9rem; --font-2xl: clamp(2.2rem, 5vw, 3.45rem);
-      --lh-tight: 1.12; --lh-snug: 1.38; --lh-normal: 1.75;
-      --cartoon-border-width: 1px; --cartoon-border-color: #e6eaf0; --cartoon-border: 1px solid var(--cartoon-border-color);
-      --cartoon-shadow: 0 8px 30px rgba(15,23,42,.06); --cartoon-shadow-hover: 0 18px 44px rgba(15,23,42,.12); --cartoon-radius: 20px;
-      --bg-color: #f7f8fa; --card-bg: #ffffff; --card-bg-hover: #fbfcfe; --text-color: #172033; --text-muted: #687385;
-      --header-bg: rgba(255,255,255,.86); --header-text: #172033; --header-accent: #315efb;
-      --accent-color: #315efb; --accent-hover: #254bd0; --accent-light: #edf2ff; --accent-button-bg: #315efb; --accent-button-hover: #254bd0; --accent-button-text: #fff;
-      --border-color: #e6eaf0; --border-radius: 20px; --dropdown-bg: #fff; --shadow-color: rgba(15,23,42,.08); --progress-color: #315efb; --transition-speed: .22s ease;
-    }
-    html.dark-mode-preload, body.dark-mode {
-      --bg-color: #0f172a; --card-bg: #172033; --card-bg-hover: #1d2940; --text-color: #f8fafc; --text-muted: #b4bfd2;
-      --header-bg: rgba(23,32,51,.88); --header-text: #f8fafc; --header-accent: #a1b4ff;
-      --accent-color: #a1b4ff; --accent-hover: #c2ceff; --accent-light: rgba(161,180,255,.15); --accent-button-bg: #416dff; --accent-button-hover: #5c80ff; --accent-button-text: #fff;
-      --border-color: #2d3b55; --cartoon-border-color: #2d3b55; --dropdown-bg: #172033; --shadow-color: rgba(0,0,0,.28); --progress-color: #a1b4ff;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    
-    body {
-      font-family: var(--font-main);
-      font-size: var(--font-base);
-      line-height: var(--lh-normal);
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      transition: background-color 0.3s ease, color 0.3s ease;
-      padding-top: 105px;
-    }
-
-    h1, h2, h3, h4, .blog-title, .nav-list a, .nav-dropdown-btn, .post-title-text, .share-title, .comments-title, .toc-title {
-      font-family: var(--font-display);
-      letter-spacing: 0.5px;
-    }
-
-    header, .blog-title, .nav-list a, .nav-dropdown-btn,
-    .dropdown-menu, .search-container, .search-btn, 
-    .dark-toggle, #live-search-results, .ad-banner, .post-card,
-    .single-post, .static-page, .comments-wrapper, .latest-post-item, 
-    .pager-link, #back-to-top, .toc-box, .sidebar-tabs-wrapper {
-      transition: all var(--transition-speed);
-    }
-
-    .progress-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 6px;
-      background: transparent;
-      z-index: 10000;
-    }
-
-    .progress-bar {
-      height: 6px;
-      background: var(--progress-color);
-      width: 0%;
-      border-right: var(--cartoon-border);
-      transition: width 0.1s ease-out;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    header {
-      position: fixed;
-      top: 12px;
-      left: 20px;
-      right: 20px;
-      max-width: 1100px;
-      margin: 0 auto;
-      z-index: 999;
-      background-color: var(--header-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: 25px;
-    }
-
-    .header-inner {
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .blog-title {
-      background-color: var(--accent-color);
-      padding: 6px 16px;
-      border: var(--cartoon-border);
-      border-radius: 15px;
-      font-weight: 700;
-      font-size: var(--font-lg);
-      line-height: var(--lh-snug);
-      text-decoration: none;
-      color: #FFFFFF !important;
-      text-align: center;
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      transform: rotate(-1.5deg);
-      flex: 0 1 auto;
-      min-width: 0;
-      max-width: min(320px, 32vw);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .blog-title:hover {
-      transform: rotate(1.5deg) scale(1.05);
-    }
-
-    .mobile-menu-btn {
-      display: none;
-      background: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      border-radius: 12px;
-      color: var(--text-color);
-      font-size: var(--font-lg);
-      cursor: pointer;
-      padding: 5px;
-      min-width: 42px;
-      min-height: 42px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .mobile-search-wrapper { display: none; }
-    .desktop-search-wrapper { display: block; }
-
-    .nav-list {
-      display: flex;
-      list-style: none;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .nav-list li { position: relative; }
-
-    .nav-list a, .nav-dropdown-btn {
-      text-decoration: none;
-      color: var(--header-text);
-      font-weight: 700;
-      padding: 8px 14px;
-      border-radius: 12px;
-      background: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      font-size: var(--font-sm);
-      line-height: var(--lh-snug);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .nav-list a:hover, .nav-dropdown-btn:hover {
-      background-color: var(--accent-color);
-      color: #FFFFFF;
-      transform: translateY(-2px);
-      box-shadow: 4px 4px 0px var(--cartoon-border-color);
-    }
-
-    .dropdown { position: relative; }
-
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 110%;
-      left: 0;
-      background-color: var(--dropdown-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: 16px;
-      min-width: 170px;
-      list-style: none;
-      padding: 8px;
-      z-index: 100;
-    }
-
-    .dropdown-menu li { width: 100%; margin-bottom: 4px; }
-    .dropdown-menu li:last-child { margin-bottom: 0; }
-
-    .dropdown-menu a {
-      display: block;
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: var(--font-sm);
-      line-height: var(--lh-snug);
-      color: var(--text-color);
-      border: none;
-      box-shadow: none;
-    }
-
-    .dropdown-menu a:hover {
-      background-color: var(--accent-color);
-      color: #FFFFFF;
-      transform: translateX(3px);
-      box-shadow: none;
-    }
-
-    .dropdown:hover .dropdown-menu, .dropdown-menu.open { display: block; }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .search-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      border-radius: 15px;
-      padding: 2px 6px;
-      height: 40px;
-    }
-
-    .search-input {
-      border: none;
-      background: transparent;
-      color: var(--text-color);
-      padding: 6px 8px;
-      outline: none;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: var(--font-sm);
-      line-height: var(--lh-snug);
-      width: 120px;
-    }
-
-    .search-input::placeholder {
-      color: var(--text-muted);
-    }
-
-    .search-btn {
-      background: var(--accent-color);
-      border: 2px solid var(--cartoon-border-color);
-      border-radius: 10px;
-      cursor: pointer;
-      padding: 4px;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .search-btn:hover {
-      transform: scale(1.08);
-    }
-
-    .dark-toggle {
-      background: var(--accent-button-bg);
-      border: var(--cartoon-border);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      border-radius: 15px;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .dark-toggle:hover {
-      transform: translateY(-2px);
-      box-shadow: 4px 4px 0px var(--cartoon-border-color);
-    }
-
-    .live-search-results {
-      display: none;
-      position: absolute;
-      top: 115%;
-      right: 0;
-      width: 280px;
-      background-color: var(--dropdown-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: 16px;
-      padding: 10px;
-      z-index: 1001;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .live-search-results a {
-      display: block;
-      padding: 8px 12px;
-      color: var(--text-color);
-      text-decoration: none;
-      font-size: var(--font-sm);
-      font-weight: 700;
-      border-radius: 8px;
-      margin-bottom: 4px;
-    }
-
-    .live-search-results a:hover {
-      background-color: var(--accent-color);
-      color: #FFFFFF;
-    }
-
-    .live-search-results p {
-      padding: 10px;
-      font-size: var(--font-sm);
-      color: var(--text-muted);
-      margin: 0;
-    }
-
-    .breadcrumbs {
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      color: var(--text-muted);
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .breadcrumbs a {
-      color: var(--accent-color);
-      text-decoration: none;
-      background: var(--card-bg);
-      padding: 3px 10px;
-      border: 2px solid var(--cartoon-border-color);
-      border-radius: 10px;
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-    }
-
-    .breadcrumbs a:hover { transform: translateY(-2px); }
-
-    .main-layout {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 25px;
-      margin-top: 20px;
-    }
-
-    .ad-banner {
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: var(--border-radius);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      margin-bottom: 25px;
-      text-align: center;
-      position: relative;
-    }
-
-    .ad-label {
-      font-size: var(--font-xs);
-      font-weight: 800;
-      line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-    }
-
-    .ad-top { min-height: 90px; width: 100%; padding: 10px; }
-    .ad-in-article { min-height: 90px; width: 100%; margin: 20px 0; padding: 10px; }
-    .ad-sidebar { min-height: 250px; width: 100%; padding: 10px; position: sticky; top: 120px; }
-
-    .ad-banner > iframe,
-    .ad-banner > ins {
-      max-width: 100%;
-    }
-
-    .post-card {
-      display: flex;
-      flex-direction: row;
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
-
-    .post-card:hover {
-      transform: translate(-3px, -3px);
-      box-shadow: var(--cartoon-shadow-hover);
-    }
-
-    .post-thumb {
-      flex: 0 0 220px;
-      min-height: 180px;
-      background-color: var(--bg-color);
-      overflow: hidden;
-      position: relative;
-      border-right: var(--cartoon-border);
-    }
-    
-    .post-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      /* Jangan sembunyikan gambar sebelum event onload: gambar yang gagal
-         dimuat tidak boleh membuat area thumbnail tampak kosong. */
-      opacity: 1;
-    }
-
-    .post-thumb img.loaded { opacity: 1; }
-    .post-card:hover .post-thumb img { transform: scale(1.08) rotate(1deg); }
-
-    .post-thumb-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      gap: 8px;
-      font-size: var(--font-sm);
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .post-card-body {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      flex-grow: 1;
-      min-width: 0;
-      justify-content: space-between;
-    }
-
-    .post-card-header {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .post-category-badge {
-      align-self: flex-start;
-      background-color: #FFD166;
-      color: #1A1A1A;
-      border: 2px solid var(--cartoon-border-color);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      font-size: var(--font-xs);
-      font-family: var(--font-display);
-      font-weight: 700;
-      text-transform: uppercase;
-      padding: 4px 12px;
-      border-radius: 12px;
-      line-height: 1;
-    }
-
-    .post-title-text {
-      font-size: var(--font-md);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      margin: 0;
-      color: var(--text-color);
-    }
-
-    .post-card:hover .post-title-text { color: var(--accent-color); }
-
-    .post-snippet-text {
-      color: var(--text-muted);
-      font-size: var(--font-sm);
-      line-height: var(--lh-normal);
-      margin-top: 4px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .post-card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 2px dashed var(--cartoon-border-color);
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      color: var(--text-muted);
-    }
-
-    .post-card-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      min-width: 0;
-    }
-
-    .post-read-more {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background-color: var(--accent-button-bg);
-      color: var(--accent-button-text);
-      border: 2px solid var(--cartoon-border-color);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      font-weight: 800;
-      font-size: var(--font-xs);
-      padding: 8px 16px;
-      border-radius: 14px;
-      text-decoration: none;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .post-read-more:hover { 
-      background-color: var(--accent-button-hover);
-      transform: translate(-2px, -2px);
-      box-shadow: 4px 4px 0px var(--cartoon-border-color);
-    }
-
-    .single-post, .static-page {
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      padding: 30px;
-      border-radius: var(--border-radius);
-      line-height: var(--lh-normal);
-    }
-
-    .single-post h1, .static-page h1 {
-      font-size: var(--font-2xl);
-      line-height: var(--lh-tight);
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--text-color);
-    }
-
-    .post-body-content h2, .static-page-content h2 {
-      font-size: var(--font-xl);
-      line-height: var(--lh-snug);
-      font-weight: 700;
-      margin: 28px 0 14px;
-      scroll-margin-top: 120px;
-    }
-
-    .post-body-content h3, .static-page-content h3 {
-      font-size: var(--font-lg);
-      line-height: var(--lh-snug);
-      font-weight: 700;
-      margin: 22px 0 12px;
-      scroll-margin-top: 120px;
-    }
-
-    .post-body-content h4, .static-page-content h4 {
-      font-size: var(--font-md);
-      line-height: var(--lh-snug);
-      font-weight: 700;
-      margin: 18px 0 10px;
-      scroll-margin-top: 120px;
-    }
-
-    .static-page-content p, .post-body-content p { margin-bottom: 1rem; }
-
-    .static-page-content ul, .static-page-content ol,
-    .post-body-content ul, .post-body-content ol {
-      margin: 10px 0 15px 20px;
-    }
-
-    .post-meta {
-      display: flex;
-      gap: 12px;
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      color: var(--text-muted);
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .post-meta-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg-color);
-      border: 2px solid var(--cartoon-border-color);
-      padding: 4px 10px;
-      border-radius: 10px;
-    }
-
-    .post-body-content { margin-top: 20px; }
-    .post-body-content a { color: var(--accent-color); font-weight: 800; }
-
-    .post-body-content img {
-      max-width: 100% !important;
-      height: auto !important;
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: 16px;
-      display: block;
-      margin: 20px auto;
-    }
-
-    .toc-box {
-      background-color: var(--bg-color);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: var(--border-radius);
-      padding: 18px 20px;
-      margin: 25px 0 30px;
-    }
-
-    .toc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .toc-title {
-      font-size: var(--font-md);
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-color);
-    }
-
-    .toc-toggle-btn {
-      background: var(--card-bg);
-      border: 2px solid var(--cartoon-border-color);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      color: var(--text-color);
-      font-family: var(--font-display);
-      font-size: var(--font-sm);
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 10px;
-    }
-
-    .toc-toggle-btn:hover { transform: scale(1.05); }
-
-    .toc-content {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 2px dashed var(--cartoon-border-color);
-    }
-
-    .toc-content.collapsed { display: none; }
-
-    .toc-list {
-      list-style: none;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    .toc-list li {
-      margin-bottom: 8px;
-      line-height: var(--lh-snug);
-    }
-
-    .toc-list li:last-child { margin-bottom: 0; }
-
-    .toc-list a {
-      color: var(--text-color);
-      font-weight: 700;
-      text-decoration: none;
-      font-size: var(--font-sm);
-      display: inline-block;
-    }
-
-    .toc-list a:hover {
-      color: var(--accent-color);
-      text-decoration: underline;
-    }
-
-    .toc-depth-h2 { margin-left: 0; font-weight: 700; }
-    .toc-depth-h3 { margin-left: 18px; }
-    .toc-depth-h4 { margin-left: 36px; }
-
-    .share-container {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 2px dashed var(--cartoon-border-color);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .share-title { 
-      font-weight: 700; 
-      font-size: var(--font-md);
-      color: var(--text-color);
-    }
-
-    .share-btn {
-      padding: 8px 16px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-family: var(--font-display);
-      font-size: var(--font-sm);
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-color);
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-    }
-
-    .share-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: currentColor;
-    }
-
-    .share-btn:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 4px 4px 0px var(--cartoon-border-color);
-    }
-
-    .share-wa:hover { background-color: #25D366; color: #FFFFFF; }
-    .share-fb:hover { background-color: #1877F2; color: #FFFFFF; }
-    .share-tw:hover { background-color: #1A1A1A; color: #FFFFFF; }
-
-    .comments-wrapper {
-      margin-top: 30px;
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      padding: 25px;
-      border-radius: var(--border-radius);
-    }
-
-    .comments-title {
-      font-size: var(--font-lg);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* ===== Styling komentar bawaan Blogger (threaded) =====
-       Nama class di bawah (comment-thread, comment-replies, comment-header .user,
-       comment-actions, thread-count) diambil dari struktur tema Blogger nyata yang
-       masih dipakai di produksi — bukan tebakan generik lagi. [Kemungkinan Besar]
-       cocok untuk mayoritas kasus; kalau ada bagian yang tidak nempel, kirim HTML
-       hasil Inspect Element dari blog Anda yang sudah live, saya sesuaikan persis. */
-    .comments-wrapper .comments-content { margin-bottom: 16px; }
-    .comments-wrapper .comments-content .comment-thread { margin: 0 0 14px; }
-    .comments-wrapper .comments-content .comment-thread ol { list-style: none; margin: 0; padding: 0; }
-    .comments-wrapper .comments-content .comment-thread:empty { display: none; }
-
-    /* Kartu tiap komentar */
-    .comments-wrapper .comments-content .comment {
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      border-radius: var(--cartoon-radius);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      padding: 14px 18px;
-    }
-
-    /* Header: nama + waktu */
-    .comments-wrapper .comment-avatar {
-      width: 34px; height: 34px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--bg-color);
-    }
-    .comments-wrapper .comment-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
-    .comments-wrapper .comment-header .user,
-    .comments-wrapper .comment-header .user a { font-weight: 700; font-size: var(--font-sm); color: var(--text-color); }
-    .comments-wrapper .comment-header .datetime,
-    .comments-wrapper .comment-header .datetime a { font-size: var(--font-xs); color: var(--text-muted); }
-
-    .comments-wrapper .comment-content,
-    .comments-wrapper .comment-body { font-size: var(--font-sm); line-height: 1.65; margin: 4px 0 8px; color: var(--text-color); }
-
-    /* Aksi: Balas / Hapus */
-    .comments-wrapper a.comment-reply,
-    .comments-wrapper a.comment-delete,
-    .comments-wrapper .comment-actions a,
-    .comments-wrapper .item-control a {
-      font-size: var(--font-xs);
-      font-weight: 700;
-      color: var(--accent-color);
-      margin-right: 14px;
-      text-decoration: none;
-    }
-    .comments-wrapper a.comment-reply:hover,
-    .comments-wrapper a.comment-delete:hover,
-    .comments-wrapper .comment-actions a:hover,
-    .comments-wrapper .item-control a:hover { color: var(--accent-hover); text-decoration: underline; }
-
-    /* Balasan bertingkat — indentasi + garis vertikal untuk hierarki "reply terstruktur" */
-    .comments-wrapper .comments-content .comment-replies {
-      margin-left: 34px;
-      margin-top: 10px;
-      padding-left: 16px;
-      border-left: 2px solid var(--border-color);
-    }
-    .comments-wrapper .comments-content .inline-thread { padding-top: 6px; }
-
-    /* Kotak balas inline & tombol lihat-balasan */
-    .comments-wrapper .comment-replybox-thread,
-    .comments-wrapper .comment-replybox-single {
-      margin: 10px 0 10px 34px;
-      max-width: calc(100% - 34px);
-    }
-    .comments-wrapper .thread-count { font-size: var(--font-xs); font-weight: 700; color: var(--accent-color); }
-    .comments-wrapper .thread-arrow { display: none; } /* ikon sprite bawaan Blogger sering pecah tanpa asetnya */
-
-    .comments-wrapper #comment-post-message,
-    .comments-wrapper .comments h4 { font-size: var(--font-md); margin: 0 0 12px; color: var(--text-color); }
-
-    .comments-wrapper iframe { max-width: 100%; border: none; }
-    .comments-wrapper iframe.blogger-iframe-colorize { border-radius: var(--cartoon-radius); }
-
-    /* Trik resmi Blogger: selector berawalan pola di bawah ini di-mirror oleh
-       skrip komentar Blogger ke DALAM iframe kotak balas — ini satu-satunya
-       cara menembus batas iframe lintas-domain untuk styling kotak tulis. */
-    iframe .blogger-iframe-colorize.blogger-comment-from-post html body {
-      background-color: var(--card-bg) !important;
-      color: var(--text-color) !important;
-      font-family: inherit !important;
-    }
-    iframe .blogger-iframe-colorize.blogger-comment-from-post html body textarea {
-      background-color: var(--bg-color) !important;
-      color: var(--text-color) !important;
-      border: var(--cartoon-border) !important;
-      border-radius: var(--cartoon-radius) !important;
-      padding: 10px 12px !important;
-      font-family: inherit !important;
-      box-sizing: border-box !important;
-    }
-
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .sidebar-tabs-wrapper {
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: var(--border-radius);
-      padding: 16px;
-    }
-
-    .sidebar-tabs {
-      display: flex;
-      gap: 6px;
-      background-color: var(--bg-color);
-      border: var(--cartoon-border);
-      border-radius: 16px;
-      padding: 4px;
-      margin-bottom: 16px;
-    }
-
-    .sidebar-tab-btn {
-      flex: 1;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 8px 4px;
-      border-radius: 12px;
-      font-family: var(--font-display);
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .sidebar-tab-btn.active {
-      background-color: var(--accent-color);
-      color: #FFFFFF;
-      border: 2px solid var(--cartoon-border-color);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-    }
-
-    .sidebar-tab-panel { display: none; }
-    .sidebar-tab-panel.active { display: block; }
-
-    .latest-posts-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .latest-post-item {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      text-decoration: none;
-      color: var(--text-color);
-      padding: 8px;
-      background: var(--bg-color);
-      border: 2px solid var(--cartoon-border-color);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      border-radius: 14px;
-    }
-
-    .latest-post-item:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 4px 4px 0px var(--cartoon-border-color);
-      background-color: var(--card-bg);
-    }
-
-    .latest-post-thumb {
-      flex: 0 0 55px;
-      width: 55px;
-      height: 55px;
-      border-radius: 10px;
-      border: 2px solid var(--cartoon-border-color);
-      overflow: hidden;
-      background-color: var(--card-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-    }
-
-    .latest-post-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-    }
-
-    .latest-post-thumb img.loaded { opacity: 1; }
-
-    .latest-post-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      min-width: 0;
-      flex: 1 1 auto;
-    }
-
-    .latest-post-title {
-      font-family: var(--font-display);
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .latest-post-date {
-      font-size: var(--font-xs);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      color: var(--text-muted);
-    }
-
-    .sidebar-loading, .sidebar-empty {
-      font-size: var(--font-sm);
-      font-weight: 700;
-      color: var(--text-muted);
-      text-align: center;
-      padding: 10px 0;
-    }
-
-    .category-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .category-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background-color: var(--bg-color);
-      border: 2px solid var(--cartoon-border-color);
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-      padding: 6px 12px;
-      border-radius: 14px;
-      text-decoration: none;
-      color: var(--text-color);
-      font-family: var(--font-display);
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .category-pill:hover {
-      background-color: #FFD166;
-      color: #1A1A1A;
-      transform: translate(-2px, -2px);
-      box-shadow: 4px 4px 0px var(--cartoon-border-color);
-    }
-
-    .category-pill-count {
-      background-color: var(--accent-color);
-      color: #FFFFFF;
-      border: 1px solid var(--cartoon-border-color);
-      font-size: var(--font-xs);
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 8px;
-      line-height: 1;
-    }
-
-    .related-posts-inline {
-      margin-top: 20px !important;
-      margin-bottom: 20px !important;
-      padding: 12px 16px;
-      background: var(--bg-color);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: 14px;
-      font-size: var(--font-base);
-      line-height: var(--lh-snug);
-      color: var(--text-color);
-      display: block;
-    }
-
-    .related-posts-inline .related-posts-label { 
-      font-family: var(--font-display);
-      font-weight: 700; 
-      color: var(--accent-color);
-    }
-
-    .related-posts-inline a {
-      color: var(--text-color);
-      font-weight: 700;
-      text-decoration: underline;
-    }
-
-    .related-posts-inline a:hover {
-      color: var(--accent-color);
-    }
-
-    footer {
-      margin-top: 40px;
-      padding: 25px 20px;
-      background-color: var(--card-bg);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: var(--border-radius);
-      text-align: center;
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: var(--lh-snug);
-      color: var(--text-muted);
-      margin-bottom: 30px;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      list-style: none;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      color: var(--text-color);
-      text-decoration: none;
-      background: var(--bg-color);
-      padding: 4px 12px;
-      border: 2px solid var(--cartoon-border-color);
-      border-radius: 10px;
-      box-shadow: 2px 2px 0px var(--cartoon-border-color);
-    }
-
-    .footer-links a:hover {
-      background-color: var(--accent-color);
-      color: #FFFFFF;
-      transform: translateY(-2px);
-    }
-
-    .blog-pager {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-top: 40px;
-      margin-bottom: 20px;
-      padding-top: 24px;
-      border-top: 2px dashed var(--cartoon-border-color);
-    }
-
-    .pager-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 20px;
-      background-color: var(--card-bg);
-      color: var(--text-color);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      border-radius: 16px;
-      font-family: var(--font-display);
-      font-size: var(--font-sm);
-      font-weight: 700;
-      line-height: 1;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .pager-link svg {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-    }
-
-    .pager-link:hover {
-      background-color: var(--accent-button-bg);
-      color: #FFFFFF;
-      transform: translate(-3px, -3px);
-      box-shadow: var(--cartoon-shadow-hover);
-    }
-
-    .pager-older { margin-left: auto; }
-    .pager-newer { margin-right: auto; }
-
-    #back-to-top {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      width: 48px;
-      height: 48px;
-      background-color: var(--accent-color);
-      border: var(--cartoon-border);
-      box-shadow: var(--cartoon-shadow);
-      color: #FFFFFF;
-      border-radius: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      visibility: hidden;
-      z-index: 1000;
-    }
-
-    #back-to-top.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    #back-to-top:hover {
-      transform: translate(-2px, -2px) scale(1.05);
-      box-shadow: var(--cartoon-shadow-hover);
-      background-color: var(--accent-hover);
-    }
-
-    @media (max-width: 960px) and (min-width: 769px) {
-      .blog-title {
-        max-width: 24vw;
-        padding-left: 10px;
-        padding-right: 10px;
+    <meta content='summary_large_image' name='twitter:card'/>
+    <meta expr:content='data:blog.metaImage ? data:blog.metaImage : data:blog.homepageUrl' property='og:image'/>
+    <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+    <title><data:blog.pageTitle/></title>
+
+    <link rel='preconnect' href='https://fonts.googleapis.com'/>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin='anonymous'/>
+    <link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+
+    <b:include data='blog' name='all-head-content'/>
+
+    <script><![CDATA[
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme-preference');
+          if (saved === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+          }
+        } catch (e) {}
+      })();
+    ]]></script>
+
+    <b:skin><![CDATA[
+      :root {
+        --bg: #f5f7fb;
+        --bg-strong: #eef3ff;
+        --card: #ffffff;
+        --card-alt: #f8faff;
+        --text: #172033;
+        --text-soft: #5d6b82;
+        --text-faint: #7a8799;
+        --line: rgba(23, 32, 51, 0.10);
+        --shadow: 0 18px 48px rgba(21, 31, 54, 0.08);
+        --shadow-soft: 0 8px 24px rgba(21, 31, 54, 0.06);
+        --accent: #3563ff;
+        --accent-strong: #214fe7;
+        --accent-soft: rgba(53, 99, 255, 0.12);
+        --success: #2cc990;
+        --warning: #ffc857;
+        --danger: #ef476f;
+        --radius: 22px;
+        --radius-sm: 14px;
+        --radius-xs: 10px;
+        --container: 1180px;
+        --header-height: 88px;
+        --transition: 180ms ease;
+        --font-display: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+        --font-body: 'Inter', 'Segoe UI', sans-serif;
       }
 
-      .nav-list { gap: 6px; }
-
-      .nav-list a,
-      .nav-dropdown-btn {
-        padding-left: 8px;
-        padding-right: 8px;
-        font-size: var(--font-xs);
+      html.dark-mode,
+      body.dark-mode {
+        --bg: #0f172a;
+        --bg-strong: #121d31;
+        --card: #152238;
+        --card-alt: #1a2942;
+        --text: #edf3ff;
+        --text-soft: #b3c0d9;
+        --text-faint: #8da0bf;
+        --line: rgba(148, 163, 184, 0.18);
+        --shadow: 0 18px 48px rgba(2, 6, 23, 0.42);
+        --shadow-soft: 0 10px 30px rgba(2, 6, 23, 0.34);
+        --accent: #9ab4ff;
+        --accent-strong: #c4d3ff;
+        --accent-soft: rgba(154, 180, 255, 0.12);
       }
 
-      .search-input { width: 80px; }
-      .header-actions { gap: 6px; }
-    }
-
-    @media (max-width: 768px) {
-      body { padding-top: 145px; }
-
-      header {
-        top: 10px;
-        left: 10px;
-        right: 10px;
+      * {
+        box-sizing: border-box;
       }
 
-      .header-inner { 
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        padding: 8px 12px; 
+      html {
+        scroll-behavior: smooth;
       }
 
-      .mobile-menu-btn { display: flex; }
-      .blog-title {
-        text-align: center;
-        padding: 4px 10px;
-        font-size: var(--font-md);
-        max-width: 45vw;
-      }
-      .header-actions { justify-self: end; min-width: 0; }
-      .desktop-search-wrapper { display: none; }
-
-      .mobile-search-wrapper {
-        display: block;
-        padding: 0 12px 12px;
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-strong) 100%);
+        color: var(--text);
+        font-family: var(--font-body);
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        transition: background-color var(--transition), color var(--transition);
       }
 
-      .mobile-search-wrapper .search-input { width: 100%; color: var(--text-color); }
-      .mobile-search-wrapper .search-container { 
-        width: 100%; 
-        background: var(--card-bg); 
-      }
-
-      nav {
-        display: none; 
-        position: absolute;
-        top: 110%;
-        left: 0;
-        right: 0;
-        background-color: var(--card-bg);
-        border: var(--cartoon-border);
-        box-shadow: var(--cartoon-shadow);
-        border-radius: 20px;
-        padding: 15px;
-      }
-
-      nav.active { display: block; }
-
-      .nav-list { 
-        flex-direction: column; 
-        align-items: flex-start; 
-        gap: 10px; 
-      }
-
-      .nav-list li, .nav-list a, .nav-dropdown-btn {
-        width: 100%;
-        text-align: left;
-        justify-content: space-between;
-      }
-
-      .dropdown-menu { 
-        position: static; 
-        box-shadow: none; 
-        padding-left: 10px; 
-        border: none;
-      }
-
-      .main-layout { grid-template-columns: 1fr; }
-      .post-card { flex-direction: column; }
-      
-      .post-thumb { 
-        flex: none;
-        width: 100%;
+      img {
+        max-width: 100%;
         height: auto;
-        min-height: 0;
-        aspect-ratio: 16 / 9;
-        border-right: none;
-        border-bottom: var(--cartoon-border);
+        display: block;
       }
 
-      .post-card-footer {
-        align-items: flex-start;
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: var(--accent-strong);
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      ::selection {
+        background: rgba(53, 99, 255, 0.22);
+      }
+
+      .container {
+        width: min(var(--container), calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .page-shell {
+        min-height: 100vh;
+      }
+
+      .progress-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: transparent;
+        z-index: 2000;
+        pointer-events: none;
+      }
+
+      .progress-bar {
+        width: 0;
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), #71b6ff);
+        box-shadow: 0 0 18px rgba(53, 99, 255, 0.5);
+        transition: width 0.16s ease-out;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 1200;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.78);
+        border-bottom: 1px solid var(--line);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.03);
+      }
+
+      html.dark-mode .topbar {
+        background: rgba(15, 23, 42, 0.74);
+      }
+
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: var(--header-height);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 10px 16px;
+        background: linear-gradient(135deg, var(--accent) 0%, #6789ff 100%);
+        color: #fff !important;
+        border-radius: 14px;
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        box-shadow: 0 10px 22px rgba(53, 99, 255, 0.24);
+        white-space: nowrap;
+      }
+
+      .brand:hover {
+        color: #fff !important;
+        transform: translateY(-1px);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        justify-content: center;
+      }
+
+      .nav-list,
+      .nav-list ul,
+      .widget-content ul,
+      .post-body-content ul,
+      .post-body-content ol,
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .nav-list {
+        display: flex;
+        align-items: center;
         flex-wrap: wrap;
-        gap: 12px;
-      }
-
-      .post-read-more {
-        margin-left: auto;
-      }
-
-      .single-post,
-      .static-page {
-        padding: 20px;
-      }
-
-      .toc-content:not(.collapsed) { display: block; }
-      .toc-content.collapsed { display: none; }
-
-      .single-post h1, .static-page h1 { font-size: var(--font-xl); }
-      .post-body-content h2, .static-page-content h2 { font-size: var(--font-lg); }
-
-      .blog-pager {
-        flex-direction: row;
         gap: 10px;
       }
 
-      .pager-link {
-        flex: 1;
+      .nav-list li {
+        position: relative;
+      }
+
+      .nav-list a,
+      .nav-list .nav-dropdown-btn {
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
-        padding: 10px 12px;
-        font-size: var(--font-xs);
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.35);
+        color: var(--text);
+        font-size: 0.87rem;
+        font-weight: 700;
+        transition: all var(--transition);
       }
 
-      .ad-sidebar { display: none; }
-
-      #back-to-top { 
-        bottom: 15px; 
-        right: 15px; 
+      .nav-list a:hover,
+      .nav-list .nav-dropdown-btn:hover,
+      .nav-list li:hover > a,
+      .nav-list li:hover > .nav-dropdown-btn {
+        background: var(--accent-soft);
+        border-color: rgba(53, 99, 255, 0.18);
+        color: var(--accent);
+        transform: translateY(-1px);
       }
 
-      .live-search-results { left: 0; right: auto; width: 100%; }
-    }
-  
+      .dropdown {
+        position: relative;
+      }
 
-    /* =========================================================
-       Complete modern-blog layout override
-       ========================================================= */
-    html { scroll-padding-top: 110px; }
-    body { background: linear-gradient(180deg,#fff 0, var(--bg-color) 360px); padding-top: 86px; }
-    body.dark-mode { background: linear-gradient(180deg,#111c33 0, var(--bg-color) 360px); }
-    h1,h2,h3,h4,.blog-title,.nav-list a,.nav-dropdown-btn,.post-title-text,.share-title,.comments-title,.toc-title { letter-spacing: -.025em; }
-    .container { max-width: 1240px; padding: 0 24px; }
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        min-width: 220px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow-soft);
+        padding: 10px;
+        display: none;
+        z-index: 30;
+      }
 
-    header { position: fixed; top: 0; left: 0; right: 0; max-width: none; border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; box-shadow: none; background: var(--header-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
-    .header-inner { max-width: 1240px; min-height: 70px; margin: 0 auto; padding: 0 24px; gap: 24px; }
-    .blog-title { flex: 0 0 auto; max-width: none; padding: 0; background: transparent; border: 0; box-shadow: none; border-radius: 0; color: var(--text-color)!important; font-weight: 800; font-size: 1.25rem; transform: none; }
-    .blog-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; background: var(--accent-color); }
-    .blog-title:hover { color: var(--accent-color)!important; transform: none; }
-    nav { margin-right: auto; }
-    .nav-list { gap: 2px; }
-    .nav-list a,.nav-dropdown-btn { background: transparent; border: none; box-shadow: none; color: var(--header-text); border-radius: 9px; font-weight: 600; padding: 9px 12px; }
-    .nav-list a:hover,.nav-dropdown-btn:hover { background: var(--accent-light); color: var(--accent-color); box-shadow: none; transform: none; }
-    .dropdown-menu { top: 125%; border: var(--cartoon-border); border-radius: 14px; box-shadow: var(--cartoon-shadow); padding: 8px; }
-    .dropdown-menu a { border: none; box-shadow: none; border-radius: 9px; }
-    .dropdown-menu a:hover { background: var(--accent-light); color: var(--accent-color); transform: none; }
-    .header-actions { gap: 8px; }
-    .search-container { height: 38px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: none; }
-    .search-input { width: 150px; }
-    .search-btn { background: transparent; color: var(--accent-color); border: none; }
-    .dark-toggle,.mobile-menu-btn { width: 38px; height: 38px; border: 1px solid var(--border-color); border-radius: 10px; background: transparent; color: var(--text-color); box-shadow: none; }
-    .dark-toggle:hover,.mobile-menu-btn:hover { background: var(--accent-light); color: var(--accent-color); box-shadow: none; transform: none; }
-    .live-search-results { border: var(--cartoon-border); border-radius: 14px; box-shadow: var(--cartoon-shadow); }
+      .dropdown:hover .dropdown-menu,
+      .dropdown:focus-within .dropdown-menu,
+      .dropdown-menu.open {
+        display: block;
+      }
 
-    .breadcrumbs { margin: 12px 0 26px; font-size: var(--font-xs); font-weight: 600; }
-    .breadcrumbs a { background: transparent; padding: 0; border: 0; box-shadow: none; color: var(--accent-color); }
-    .main-layout { grid-template-columns: minmax(0,1fr) 310px; gap: 38px; margin-top: 0; align-items: start; }
-    .main-content { min-width: 0; }
+      .dropdown-menu a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 10px;
+        color: var(--text);
+        background: transparent;
+        font-weight: 600;
+      }
 
-    .ad-banner { border: 1px dashed var(--border-color); box-shadow: none; border-radius: 14px; background: transparent; margin-bottom: 28px; }
-    .ad-top,.ad-in-article { min-height: 100px; }
-    .ad-sidebar { min-height: 250px; }
+      .dropdown-menu a:hover {
+        background: var(--accent-soft);
+      }
 
-    .post-card { display: grid; grid-template-columns: 260px minmax(0,1fr); margin: 0; padding: 0; border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; box-shadow: none; background: transparent; overflow: visible; }
-    .post-card + .post-card { margin-top: 28px; padding-top: 28px; }
-    .post-card:hover { transform: none; box-shadow: none; }
-    .post-thumb { width: 100%; min-height: 0; height: auto; aspect-ratio: 16/10; flex: none; border: none; border-radius: 14px; background: #eaf0f8; overflow: hidden; }
-    .post-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
-    .post-card:hover .post-thumb img { transform: scale(1.045); }
-    .post-card-body { padding: 4px 0 4px 22px; }
-    .post-card-header { gap: 9px; }
-    .post-category-badge { background: transparent; border: none; border-radius: 0; box-shadow: none; color: var(--accent-color); padding: 0; font-family: var(--font-main); font-size: var(--font-xs); font-weight: 800; letter-spacing: .08em; }
-    .post-title-text { font-size: clamp(1.25rem,2.2vw,1.55rem); line-height: 1.3; font-weight: 780; }
-    .post-snippet-text { -webkit-line-clamp: 2; margin-top: 3px; }
-    .post-card-footer { justify-content: flex-start; gap: 16px; border: none; margin-top: 10px; padding-top: 0; font-size: var(--font-xs); }
-    .post-card-meta { gap: 8px; }
-    .post-read-more { padding: 0; margin-left: 0; background: transparent; color: var(--accent-color); border: none; border-radius: 0; box-shadow: none; font-size: var(--font-xs); }
-    .post-read-more:hover { background: transparent; color: var(--accent-hover); box-shadow: none; transform: translateX(3px); }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
 
-    .single-post,.static-page { max-width: 820px; margin: 0 auto; padding: 0; background: transparent; border: none; border-radius: 0; box-shadow: none; }
-    .single-post h1,.static-page h1 { max-width: 900px; font-size: var(--font-2xl); letter-spacing: -.045em; }
-    .post-meta { gap: 8px; margin: 16px 0 26px; }
-    .post-meta-item { background: transparent; border: none; padding: 0; border-radius: 0; }
-    .post-body-content { font-size: 1.075rem; line-height: 1.82; }
-    .post-body-content h2,.static-page-content h2 { font-size: clamp(1.5rem,3vw,2rem); margin-top: 2.5rem; }
-    .post-body-content h3,.static-page-content h3 { margin-top: 2rem; }
-    .post-body-content a { color: var(--accent-color); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-    .post-body-content img { width: 100%; border: 0; border-radius: 16px; box-shadow: none; }
-    .toc-box { background: var(--accent-light); border: 1px solid var(--border-color); border-radius: 14px; box-shadow: none; }
-    .toc-content { border-top: 1px solid var(--border-color); }
-    .toc-toggle-btn { border: 1px solid var(--border-color); border-radius: 8px; box-shadow: none; }
-    .share-container { border-top: 1px solid var(--border-color); }
-    .share-btn { border: 1px solid var(--border-color); border-radius: 9px; box-shadow: none; }
-    .share-btn:hover { box-shadow: none; transform: translateY(-2px); }
-    .comments-wrapper { max-width: 820px; margin: 42px auto 0; padding: 0; background: transparent; border: none; border-radius: 0; box-shadow: none; }
+      .search-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.48);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 6px 8px 6px 12px;
+        min-width: 260px;
+      }
 
-    /* Compact comment layout: applies equally to parent comments and replies */
-    .comments-wrapper .comments-content .comment {
-      display: grid;
-      grid-template-columns: 28px minmax(0, 1fr);
-      column-gap: 9px;
-      row-gap: 1px;
-      padding: 0;
-      background: transparent;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-    }
-    .comments-wrapper .comments-content .comment + .comment { margin-top: 14px; }
-    .comments-wrapper .comment-avatar,
-    .comments-wrapper .comment-avatar-fallback {
-      grid-column: 1;
-      grid-row: 1;
-      width: 28px;
-      height: 28px;
-      margin-top: 1px;
-      font-size: .68rem;
-    }
-    .comments-wrapper .comment-header {
-      grid-column: 2;
-      grid-row: 1;
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin: 0;
-      line-height: 1.25;
-    }
-    .comments-wrapper .comment-header .user,
-    .comments-wrapper .comment-header .user a { font-size: var(--font-sm); }
-    .comments-wrapper .comment-header .datetime,
-    .comments-wrapper .comment-header .datetime a { font-size: .72rem; }
-    .comments-wrapper .comment-content,
-    .comments-wrapper .comment-body,
-    .comments-wrapper .deleted-comment {
-      grid-column: 2;
-      margin: 1px 0 0;
-      font-size: var(--font-sm);
-      line-height: 1.55;
-    }
-    .comments-wrapper .comment-actions,
-    .comments-wrapper .item-control {
-      grid-column: 2;
-      margin-top: 3px;
-      line-height: 1.2;
-    }
-    .comments-wrapper a.comment-reply,
-    .comments-wrapper a.comment-delete,
-    .comments-wrapper .comment-actions a,
-    .comments-wrapper .item-control a {
-      margin-right: 10px;
-      font-size: .72rem;
-      line-height: 1.2;
-    }
-    .comments-wrapper .comments-content .comment-replies {
-      margin: 9px 0 0 18px;
-      padding-left: 10px;
-      border-left: 1px solid var(--border-color);
-    }
-    .comments-wrapper .comments-content .comment-replies .comment { margin-top: 10px; }
-    .comments-wrapper .comments-content .comment-replies .comment + .comment { margin-top: 10px; }
-    .comments-wrapper .comment-replybox-thread,
-    .comments-wrapper .comment-replybox-single {
-      margin: 8px 0 8px 18px;
-      max-width: calc(100% - 18px);
-    }
-    @media (max-width: 480px) {
-      .comments-wrapper .comments-content .comment { grid-template-columns: 26px minmax(0, 1fr); column-gap: 8px; }
-      .comments-wrapper .comment-avatar,
-      .comments-wrapper .comment-avatar-fallback { width: 26px; height: 26px; }
-      .comments-wrapper .comments-content .comment-replies { margin-left: 12px; padding-left: 8px; }
-      .comments-wrapper .comment-replybox-thread,
-      .comments-wrapper .comment-replybox-single { margin-left: 12px; max-width: calc(100% - 12px); }
-    }
+      .search-wrap input {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        outline: 0;
+        font-size: 0.92rem;
+      }
 
-    .sidebar { position: sticky; top: 94px; gap: 20px; }
-    .sidebar-tabs-wrapper { border: 1px solid var(--border-color); border-radius: 16px; box-shadow: none; padding: 16px; }
-    .sidebar-tabs { border: none; border-radius: 10px; background: var(--bg-color); padding: 4px; }
-    .sidebar-tab-btn.active { border: none; border-radius: 8px; box-shadow: none; }
-    .latest-post-item { padding: 8px 0; border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; box-shadow: none; background: transparent; }
-    .latest-post-item:last-child { border-bottom: none; }
-    .latest-post-item:hover { background: transparent; box-shadow: none; color: var(--accent-color); transform: none; }
-    .latest-post-thumb { width: 58px; height: 58px; flex-basis: 58px; border: none; border-radius: 9px; }
-    .category-pill { border: 1px solid var(--border-color); border-radius: 999px; box-shadow: none; background: transparent; }
-    .category-pill:hover { background: var(--accent-light); box-shadow: none; color: var(--accent-color); transform: none; }
-    .category-pill-count { border: none; background: var(--accent-color); }
-    .related-posts-inline { background: var(--accent-light); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: none; }
+      .search-wrap input::placeholder {
+        color: var(--text-faint);
+      }
 
-    footer { max-width: 1192px; margin: 64px auto 28px; padding: 28px 20px; border: 1px solid var(--border-color); border-radius: 16px; box-shadow: none; background: transparent; }
-    .footer-links a { background: transparent; border: none; box-shadow: none; }
-    .footer-links a:hover { background: transparent; color: var(--accent-color); transform: none; }
-    .blog-pager { border-top: 1px solid var(--border-color); }
-    .pager-link { border: 1px solid var(--border-color); border-radius: 10px; box-shadow: none; }
-    .pager-link:hover { background: var(--accent-color); box-shadow: none; transform: translateY(-2px); }
-    #back-to-top { width: 46px; height: 46px; border: none; border-radius: 50%; box-shadow: var(--cartoon-shadow); }
+      .search-btn,
+      .theme-toggle,
+      .mobile-menu-btn,
+      .toc-toggle-btn,
+      .share-btn,
+      .sidebar-tab-btn,
+      .pager-link,
+      .comment-reply {
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--text);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
 
-    .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10002; background: var(--accent-color); color: #fff; padding: 10px 14px; border-radius: 9px; text-decoration: none; font-weight: 700; transition: top .2s ease; }
-    .skip-link:focus { top: 16px; }
-    a:focus-visible,button:focus-visible,input:focus-visible,[tabindex]:focus-visible { outline: 3px solid rgba(49,94,251,.42); outline-offset: 3px; border-radius: 7px; }
-    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration: .01ms!important; transition-duration: .01ms!important; scroll-behavior: auto!important; } }
+      .search-btn {
+        background: linear-gradient(135deg, var(--accent) 0%, #6789ff 100%);
+        border-color: transparent;
+        color: #fff;
+        padding: 8px 12px;
+        font-weight: 700;
+      }
 
-    @media (max-width: 960px) and (min-width: 769px) { .main-layout { grid-template-columns: minmax(0,1fr) 270px; gap: 26px; } .post-card { grid-template-columns: 210px minmax(0,1fr); } .search-input { width: 100px; } }
-    @media (max-width: 768px) {
-      body { padding-top: 76px; background: var(--bg-color); }
-      header { top: 0; left: 0; right: 0; border-radius: 0; }
-      .header-inner { min-height: 62px; padding: 0 14px; grid-template-columns: auto 1fr auto; }
-      .blog-title { justify-self: center; font-size: 1.08rem; }
-      nav { top: 112%; left: 12px; right: 12px; margin: 0; border: 1px solid var(--border-color); border-radius: 14px; box-shadow: var(--cartoon-shadow); }
-      .mobile-search-wrapper { padding: 0 12px 12px; }
-      .main-layout { display: block; }
-      .sidebar { position: static; margin-top: 36px; }
-      .post-card,.post-card + .post-card { display: block; margin-top: 26px; padding-top: 0; border: none; }
-      .post-thumb { aspect-ratio: 16/9; border-radius: 14px; }
-      .post-card-body { padding: 16px 0 0; }
-      .post-card-footer { margin-top: 10px; }
-      .post-read-more { margin-left: auto; }
-      .single-post,.static-page { max-width: none; }
-      .post-body-content { font-size: 1rem; }
-      .breadcrumbs { margin-top: 4px; }
-      footer { margin: 46px 14px 18px; }
-    }
+      .theme-toggle,
+      .mobile-menu-btn {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
 
-]]></b:skin>
-</head>
-<body>
-  <a class='skip-link' href='#main-content'>Lewati ke konten utama</a>
+      .search-btn:hover,
+      .theme-toggle:hover,
+      .mobile-menu-btn:hover,
+      .toc-toggle-btn:hover,
+      .share-btn:hover,
+      .sidebar-tab-btn:hover,
+      .pager-link:hover,
+      .comment-reply:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-soft);
+      }
 
-  <!-- Indikator Reading Progress -->
-  <div class='progress-container'>
-    <div class='progress-bar' id='myBar'/>
-  </div>
+      .main-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(280px, 0.9fr);
+        gap: 24px;
+        padding-top: 28px;
+        padding-bottom: 48px;
+      }
 
-  <!-- Sticky Header -->
-  <header>
-    <div class='header-inner'>
-      <button aria-expanded='false' aria-label='Buka Menu Navigasi' class='mobile-menu-btn' onclick='toggleMobileMenu(this)'>
-        <svg height='24' viewBox='0 0 24 24' width='24'><path d='M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z' fill='currentColor'/></svg>
-      </button>
+      .content-area,
+      .sidebar {
+        min-width: 0;
+      }
 
-      <a class='blog-title' href='/'><data:blog.title/></a>
+      .card,
+      .widget-card,
+      .post-card,
+      .single-post,
+      .comments,
+      .sidebar-widget,
+      .toc-box {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+      }
 
-      <nav id='main-nav'>
-        <ul class='nav-list'>
-          <li><a href='/'>Beranda</a></li>
-          <li class='dropdown'>
-            <button aria-expanded='false' aria-haspopup='true' class='nav-dropdown-btn' onclick='toggleDropdown(this)'>Kategori &#9662;</button>
-            <ul class='dropdown-menu'>
-              <li><a href='/search/label/Teknologi'>Teknologi</a></li>
-              <li><a href='/search/label/Gaya%20Hidup'>Gaya Hidup</a></li>
-              <li><a href='/search/label/Edukasi'>Edukasi</a></li>
-            </ul>
-          </li>
-          <li class='dropdown'>
-            <button aria-expanded='false' aria-haspopup='true' class='nav-dropdown-btn' onclick='toggleDropdown(this)'>Halaman &#9662;</button>
-            <ul class='dropdown-menu'>
-              <li><a href='/p/tentang.html'>Tentang</a></li>
-              <li><a href='/p/kontak.html'>Kontak</a></li>
-              <li><a href='/p/disclaimer.html'>Disclaimer</a></li>
-              <li><a href='/p/kebijakan-privasi.html'>Kebijakan Privasi</a></li>
-              <li><a href='/p/sitemap.html'>Sitemap</a></li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
+      .post-card {
+        display: grid;
+        grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
+        overflow: hidden;
+        margin-bottom: 22px;
+      }
 
-      <div class='header-actions'>
-        <div class='desktop-search-wrapper'>
-          <form action='/search' method='get' style='margin:0;'>
-            <div class='search-container'>
-              <input autocomplete='off' class='search-input' id='search-input' name='q' onkeyup='doLiveSearch(&quot;desktop&quot;)' placeholder='Cari...' type='text'/>
-              <button aria-label='Cari' class='search-btn' type='submit'>
-                <svg aria-hidden='true' height='18' viewBox='0 0 24 24' width='18'><path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' fill='currentColor'/></svg>
-              </button>
-              <div class='live-search-results' id='live-search-results'/>
-            </div>
-          </form>
+      .post-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+      }
+
+      .post-thumb {
+        position: relative;
+        min-height: 220px;
+        background: var(--bg-strong);
+      }
+
+      .post-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .post-card-body {
+        padding: 20px 22px 18px;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .post-category {
+        display: inline-flex;
+        align-self: flex-start;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 200, 87, 0.22);
+        color: #9a6a00;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+
+      .post-title {
+        margin: 0 0 10px;
+        font-family: var(--font-display);
+        font-size: clamp(1.3rem, 2vw, 1.8rem);
+        line-height: 1.25;
+        font-weight: 800;
+      }
+
+      .post-title a {
+        color: var(--text);
+      }
+
+      .post-snippet {
+        color: var(--text-soft);
+        margin: 0 0 16px;
+        font-size: 0.96rem;
+      }
+
+      .post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px dashed var(--line);
+        color: var(--text-faint);
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--bg-strong);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 6px 10px;
+      }
+
+      .single-post {
+        padding: 28px 28px 20px;
+      }
+
+      .entry-title {
+        margin: 0 0 16px;
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        line-height: 1.1;
+        font-weight: 800;
+      }
+
+      .entry-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-bottom: 16px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+        color: var(--text-soft);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .post-body-content,
+      .static-page-content {
+        color: var(--text);
+        font-size: 1.02rem;
+      }
+
+      .post-body-content h1,
+      .post-body-content h2,
+      .post-body-content h3,
+      .post-body-content h4,
+      .static-page-content h1,
+      .static-page-content h2,
+      .static-page-content h3,
+      .static-page-content h4 {
+        margin-top: 28px;
+        margin-bottom: 12px;
+        font-family: var(--font-display);
+        line-height: 1.2;
+      }
+
+      .post-body-content h2,
+      .static-page-content h2 {
+        font-size: clamp(1.4rem, 2vw, 2rem);
+      }
+
+      .post-body-content h3,
+      .static-page-content h3 {
+        font-size: clamp(1.2rem, 1.6vw, 1.5rem);
+      }
+
+      .post-body-content p,
+      .post-body-content li,
+      .static-page-content p,
+      .static-page-content li {
+        color: var(--text);
+      }
+
+      .post-body-content img,
+      .static-page-content img {
+        display: block;
+        max-width: 100%;
+        margin: 18px auto;
+        border-radius: 18px;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .post-body-content a,
+      .static-page-content a {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .post-body-content blockquote,
+      .static-page-content blockquote {
+        margin: 22px 0;
+        padding: 16px 18px;
+        border-left: 4px solid var(--accent);
+        background: var(--bg-strong);
+        border-radius: 12px;
+        color: var(--text-soft);
+      }
+
+      .toc-box {
+        margin: 24px 0;
+        padding: 18px 20px;
+      }
+
+      .toc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .toc-title {
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin: 0;
+      }
+
+      .toc-toggle-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .toc-content {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--line);
+      }
+
+      .toc-content.collapsed {
+        display: none;
+      }
+
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .toc-list a {
+        display: inline-block;
+        color: var(--text-soft);
+        font-weight: 600;
+      }
+
+      .toc-list a:hover {
+        color: var(--accent);
+      }
+
+      .toc-depth-h2 { margin-left: 0; }
+      .toc-depth-h3 { margin-left: 18px; }
+      .toc-depth-h4 { margin-left: 36px; }
+
+      .share-box {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 26px;
+        padding-top: 18px;
+        border-top: 1px dashed var(--line);
+      }
+
+      .share-label {
+        font-family: var(--font-display);
+        font-weight: 800;
+        margin-right: 4px;
+      }
+
+      .share-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .share-wa:hover { background: #25d366; color: #fff; }
+      .share-fb:hover { background: #1877f2; color: #fff; }
+      .share-tw:hover { background: #1d9bf0; color: #fff; }
+
+      .comments {
+        margin-top: 28px;
+        padding: 24px 22px;
+      }
+
+      .comments-title {
+        margin: 0 0 18px;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 800;
+      }
+
+      .comment-body {
+        padding: 14px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .comment-author {
+        font-weight: 800;
+      }
+
+      .comment-date {
+        color: var(--text-faint);
+        font-size: 0.72rem;
+      }
+
+      .comment-content {
+        color: var(--text-soft);
+        margin-top: 6px;
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .sidebar-widget {
+        padding: 18px 16px;
+      }
+
+      .sidebar-title {
+        margin: 0 0 14px;
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 800;
+      }
+
+      .sidebar-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .sidebar-list a {
+        display: block;
+        padding: 8px 10px;
+        border-radius: 10px;
+        color: var(--text-soft);
+        background: var(--bg-strong);
+        border: 1px solid var(--line);
+        font-weight: 600;
+      }
+
+      .sidebar-list a:hover {
+        color: var(--accent);
+      }
+
+      .sidebar-tabs {
+        display: flex;
+        gap: 8px;
+        background: var(--bg-strong);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 6px;
+        margin-bottom: 12px;
+      }
+
+      .sidebar-tab-btn {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        font-weight: 800;
+      }
+
+      .sidebar-tab-btn.active {
+        background: linear-gradient(135deg, var(--accent) 0%, #6789ff 100%);
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .sidebar-tab-panel {
+        display: none;
+      }
+
+      .sidebar-tab-panel.active {
+        display: block;
+      }
+
+      .pager {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .pager-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        font-weight: 700;
+      }
+
+      .pager .current {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 12px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      @media (max-width: 980px) {
+        .header-inner {
+          flex-wrap: wrap;
+          justify-content: center;
+          padding: 10px 0;
+        }
+
+        .nav {
+          order: 3;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .main-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 760px) {
+        :root {
+          --header-height: 126px;
+        }
+
+        .header-inner {
+          align-items: flex-start;
+        }
+
+        .nav-list {
+          justify-content: center;
+        }
+
+        .search-wrap {
+          min-width: 0;
+          width: 100%;
+        }
+
+        .header-actions {
+          width: 100%;
+        }
+
+        .post-card {
+          grid-template-columns: 1fr;
+        }
+
+        .single-post {
+          padding: 20px 18px 16px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    ]]></b:skin>
+  </head>
+
+  <body expr:class='data:blog.pageType'>
+    <div class='page-shell'>
+      <div class='progress-container'><div class='progress-bar' id='progressBar'></div></div>
+
+      <header class='topbar'>
+        <div class='container header-inner'>
+          <a class='brand' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
+
+          <nav class='nav' aria-label='Main navigation'>
+            <b:section id='topNav' class='navbar' maxwidgets='5' showaddelement='yes'>
+              <b:widget id='PageList1' locked='false' title='Pages' type='PageList' visible='true'>
+                <b:includable id='main'>
+                  <b:if cond='data:blog.pageType != &quot;item&quot;'>
+                    <ul class='nav-list'>
+                      <b:loop values='data:links' var='link'>
+                        <li><a expr:href='data:link.href'><data:link.title/></a></li>
+                      </b:loop>
+                    </ul>
+                  </b:if>
+                </b:includable>
+              </b:widget>
+            </b:section>
+          </nav>
+
+          <div class='header-actions'>
+            <form class='search-wrap' action='/search' method='get' role='search'>
+              <input aria-label='Search' name='q' placeholder='Cari artikel...' type='search'/>
+              <button class='search-btn' type='submit'>Cari</button>
+            </form>
+            <button aria-label='Toggle dark mode' class='theme-toggle' type='button'>☾</button>
+          </div>
+        </div>
+      </header>
+
+      <main class='container main-layout'>
+        <div class='content-area'>
+          <b:section class='main' id='main' showaddelement='yes'>
+            <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' visible='true'/>
+          </b:section>
         </div>
 
-        <button aria-label='Aktifkan mode gelap' class='dark-toggle' onclick='toggleDarkMode()' title='Ganti mode tema'>
-          <svg fill='none' height='18' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='18'><path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class='mobile-search-wrapper'>
-      <form action='/search' method='get' style='margin:0;'>
-        <div class='search-container'>
-          <input autocomplete='off' class='search-input' id='search-input-mobile' name='q' onkeyup='doLiveSearch(&quot;mobile&quot;)' placeholder='Cari artikel...' type='text'/>
-          <button aria-label='Cari' class='search-btn' type='submit'>
-            <svg aria-hidden='true' height='18' viewBox='0 0 24 24' width='18'><path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5 5 7.01 7.01 5 9.5 5S14 7.01 14 9.5 11.99 14 9.5 14z' fill='currentColor'/></svg>
-          </button>
-          <div class='live-search-results' id='live-search-results-mobile'/>
-        </div>
-      </form>
-    </div>
-  </header>
-
-  <div class='container'>
-    <div class='main-layout'>
-      <main>
-        <div class='ad-banner ad-top'><script>
-  atOptions = {
-    &#39;key&#39; : &#39;8e67446dbe74c4649d093f6c4020006b&#39;,
-    &#39;format&#39; : &#39;iframe&#39;,
-    &#39;height&#39; : 90,
-    &#39;width&#39; : 728,
-    &#39;params&#39; : {}
-  };
-</script>
-<script src='https://recognitiondesperation.com/8e67446dbe74c4649d093f6c4020006b/invoke.js'/>
-        </div>
-
-        <b:section id='main-feed' showelement='yes'>
-          <b:widget id='Blog1' locked='true' title='Postingan Blog' type='Blog' version='1'>
-            <b:widget-settings>
-              <b:widget-setting name='showDateHeader'>true</b:widget-setting>
-              <b:widget-setting name='commentLabel'>$type={blogger}</b:widget-setting>
-              <b:widget-setting name='style.textcolor'>#ffffff</b:widget-setting>
-              <b:widget-setting name='showShareButtons'>true</b:widget-setting>
-              <b:widget-setting name='authorLabel'>by</b:widget-setting>
-              <b:widget-setting name='showCommentLink'>true</b:widget-setting>
-              <b:widget-setting name='style.urlcolor'>#ffffff</b:widget-setting>
-              <b:widget-setting name='showAuthor'>true</b:widget-setting>
-              <b:widget-setting name='style.linkcolor'>#ffffff</b:widget-setting>
-              <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
-              <b:widget-setting name='style.bgcolor'>#ffffff</b:widget-setting>
-              <b:widget-setting name='timestampLabel'>&#8226;</b:widget-setting>
-              <b:widget-setting name='reactionsLabel'/>
-              <b:widget-setting name='showAuthorProfile'>true</b:widget-setting>
-              <b:widget-setting name='style.layout'>1x1</b:widget-setting>
-              <b:widget-setting name='showLabels'>true</b:widget-setting>
-              <b:widget-setting name='showLocation'>false</b:widget-setting>
-              <b:widget-setting name='postLabelsLabel'>Tags:</b:widget-setting>
-              <b:widget-setting name='showTimestamp'>true</b:widget-setting>
-              <b:widget-setting name='postsPerAd'>1</b:widget-setting>
-              <b:widget-setting name='showBacklinks'>false</b:widget-setting>
-              <b:widget-setting name='style.bordercolor'>#ffffff</b:widget-setting>
-              <b:widget-setting name='showInlineAds'>false</b:widget-setting>
-              <b:widget-setting name='showReactions'>false</b:widget-setting>
-            </b:widget-settings>
-            <b:includable id='main'>
-              <!-- Kondisi Tampilan Halaman Statis -->
-              <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
-                <b:loop values='data:posts' var='post'>
-                  <div class='breadcrumbs'>
-                    <a href='/'>Beranda</a> &#8250; <span><data:post.title/></span>
-                  </div>
-                  <article class='static-page'>
-                    <h1><data:post.title/></h1>
-                    <div class='static-page-content'>
-                      <data:post.body/>
-                    </div>
-                  </article>
-                </b:loop>
-
-              <!-- Kondisi Tampilan Single Post Artikel -->
-              <b:elseif cond='data:blog.pageType == &quot;item&quot;'/>
-                <b:loop values='data:posts' var='post'>
-                  <div class='breadcrumbs'>
-                    <a href='/'>Beranda</a>
-                    <b:if cond='data:post.labels'>
-                      &#8250; <a expr:href='data:post.labels.first.url'><data:post.labels.first.name/></a>
-                    </b:if>
-                    &#8250; <span><data:post.title/></span>
-                  </div>
-
-                  <article class='single-post'>
-                    <h1><data:post.title/></h1>
-                    
-                    <div class='post-meta'>
-                      <span class='post-meta-item'>
-                        <svg fill='none' height='16' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='16'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
-                        <data:post.author/>
-                      </span>
-                      <span class='post-meta-item'>
-                        <svg fill='none' height='16' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='16'><rect height='18' rx='2' ry='2' width='18' x='3' y='4'/><line x1='16' x2='16' y1='2' y2='6'/><line x1='8' x2='8' y1='2' y2='6'/><line x1='3' x2='21' y1='10' y2='10'/></svg>
-                        <b:if cond='data:post.date'><data:post.date/><b:else/><data:post.dateHeader/></b:if>
-                      </span>
-                      <span class='post-meta-item' id='reading-time'>
-                        <svg fill='none' height='16' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='16'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>
-                        <span>Menghitung...</span>
-                      </span>
-                    </div>
-
-                    <!-- Isi Artikel -->
-                    <div class='post-body-content' expr:data-post-label='data:post.labels ? data:post.labels.first.name : &quot;&quot;' expr:data-post-url='data:post.url' id='post-body'>
-                      <data:post.body/>
-                    </div>
-
-                    <!-- Tombol Bagikan -->
-                    <div class='share-container'>
-                      <span class='share-title'>Bagikan:</span>
-                      
-                      <!-- WhatsApp -->
-                      <a aria-label='Bagikan ke WhatsApp' class='share-btn share-wa' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.title + &quot;%20&quot; + data:post.url' target='_blank'>
-                        <svg viewBox='0 0 24 24'><path d='M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.764.459 3.487 1.333 5.006L2 22l5.228-1.372c1.464.799 3.111 1.22 4.78 1.22 5.507 0 9.991-4.478 9.992-9.985C22.001 6.357 17.518 2 12.012 2zm.001 18.318c-1.5 0-2.967-.403-4.243-1.162l-.305-.181-3.155.827.842-3.076-.198-.316c-.833-1.328-1.273-2.868-1.272-4.444.002-4.587 3.736-8.319 8.332-8.319 2.223 0 4.312.866 5.884 2.44 1.571 1.573 2.435 3.663 2.434 5.885-.002 4.588-3.736 8.32-8.32 8.320z'/></svg>
-                        <span>WhatsApp</span>
-                      </a>
-
-                      <!-- Facebook -->
-                      <a aria-label='Bagikan ke Facebook' class='share-btn share-fb' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' target='_blank'>
-                        <svg viewBox='0 0 24 24'><path d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z'/></svg>
-                        <span>Facebook</span>
-                      </a>
-
-                      <!-- Twitter / X -->
-                      <a aria-label='Bagikan ke Twitter' class='share-btn share-tw' expr:href='&quot;https://twitter.com/intent/tweet?text=&quot; + data:post.title + &quot;&amp;url=&quot; + data:post.url' target='_blank'>
-                        <svg viewBox='0 0 24 24'><path d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'/></svg>
-                        <span>Twitter</span>
-                      </a>
-                    </div>
-                  </article>
-
-                  <div class='ad-banner ad-in-article'><script>
-  atOptions = {
-    &#39;key&#39; : &#39;8e67446dbe74c4649d093f6c4020006b&#39;,
-    &#39;format&#39; : &#39;iframe&#39;,
-    &#39;height&#39; : 90,
-    &#39;width&#39; : 728,
-    &#39;params&#39; : {}
-  };
-</script>
-<script src='https://recognitiondesperation.com/8e67446dbe74c4649d093f6c4020006b/invoke.js'/>
-                  </div>
-
-                  <!-- Kolom Komentar Bawaan Blogger (native, threaded) -->
-                  <div class='comments-wrapper'>
-                    <div class='comments-title'>
-                      <svg fill='none' height='20' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='20'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></svg>
-                      Komentar
-                    </div>
-                    <b:include data='post' name='comment_picker'/>
-                  </div>
-                </b:loop>
-
-              <!-- Kondisi Tampilan Feed Beranda / Index -->
-              <b:else/>
-                <b:loop values='data:posts' var='post'>
-                  <article class='post-card'>
-                    <div class='post-thumb'>
-                      <b:if cond='data:post.firstImageUrl'>
-                        <img decoding='async' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy' onload='this.classList.add(&quot;loaded&quot;)'/>
-                      <b:else/>
-                        <div class='post-thumb-placeholder'>
-                          <svg height='32' viewBox='0 0 24 24' width='32'><path d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z' fill='currentColor'/></svg>
-                          <span>No Image</span>
-                        </div>
-                      </b:if>
-                    </div>
-
-                    <div class='post-card-body'>
-                      <div class='post-card-header'>
-                        <b:if cond='data:post.labels'>
-                          <span class='post-category-badge'><data:post.labels.first.name/></span>
-                        </b:if>
-                        <h2 class='post-title-text'>
-                          <a expr:href='data:post.url' style='text-decoration:none; color:inherit;'>
-                            <data:post.title/>
-                          </a>
-                        </h2>
-                        <div class='post-snippet-text'>
-                          <b:if cond='data:post.snippet'>
-                            <data:post.snippet/>
-                          <b:else/>
-                            Bacalah artikel selengkapnya untuk mendapatkan informasi detail.
-                          </b:if>
-                        </div>
-                      </div>
-
-                      <div class='post-card-footer'>
-                        <div class='post-card-meta'>
-                          <span><data:post.author/></span>
-                          <span>&#8226;</span>
-                          <span><b:if cond='data:post.date'><data:post.date/><b:else/><data:post.dateHeader/></b:if></span>
-                        </div>
-                        <a class='post-read-more' expr:href='data:post.url'>
-                          Baca 
-                          <svg fill='none' height='14' stroke='currentColor' stroke-width='2.5' viewBox='0 0 24 24' width='14'><path d='M5 12h14M12 5l7 7-7 7'/></svg>
-                        </a>
-                      </div>
-                    </div>
-                  </article>
-                </b:loop>
-
-                <!-- Modern Pager Link -->
-                <div class='blog-pager' id='blog-pager'>
-                  <b:if cond='data:newerPageUrl'>
-                    <a aria-label='Halaman Sebelumnya' class='pager-link pager-newer' expr:href='data:newerPageUrl'>
-                      <svg fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'><line x1='19' x2='5' y1='12' y2='12'/><polyline points='12 19 5 12 12 5'/></svg>
-                      <span class='pager-link-text'><data:newerPageTitle/></span>
-                    </a>
-                  </b:if>
-                  <b:if cond='data:olderPageUrl'>
-                    <a aria-label='Halaman Selanjutnya' class='pager-link pager-older' expr:href='data:olderPageUrl'>
-                      <span class='pager-link-text'><data:olderPageTitle/></span>
-                      <svg fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'><line x1='5' x2='19' y1='12' y2='12'/><polyline points='12 5 19 12 12 19'/></svg>
-                    </a>
-                  </b:if>
-                </div>
-              </b:if>
-            </b:includable>
-            <b:includable id='backlinkDeleteIcon' var='backlink'/>
-            <b:includable id='backlinks' var='post'/>
-            <b:includable id='comment-form' var='post'>
-              <div class='comment-form'>
-                <a name='comment-form'/>
-                <h4 id='comment-post-message'><data:postCommentMsg/></h4>
-                <p><data:blogCommentMessage/></p>
-                <data:blogTeamBlogMessage/>
-                <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
-                <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
-                <data:post.cmtfpIframe/>
-                <script type='text/javascript'>
-                  //<![CDATA[
-                  BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
-                  //]]>
-                </script>
-              </div>
-            </b:includable>
-            <b:includable id='commentDeleteIcon' var='comment'>
-              <span expr:class='&quot;item-control &quot; + data:comment.adminClass'>
-                <a class='comment-delete' expr:href='data:comment.deleteUrl' expr:title='data:top.deleteCommentMsg'>
-                  <svg fill='none' height='14' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='14'><path d='M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z'/></svg>
-                </a>
-              </span>
-            </b:includable>
-            <b:includable id='comment_count_picker' var='post'>
-              <a class='comment-link' expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'><data:post.commentLabelFull/>:</a>
-            </b:includable>
-            <b:includable id='comment_picker' var='post'>
-              <b:if cond='data:post.commentSource == 1'>
-                <b:include data='post' name='iframe_comments'/>
-              <b:elseif cond='data:post.showThreadedComments'/>
-                <b:include data='post' name='threaded_comments'/>
-              <b:else/>
-                <b:include data='post' name='comments'/>
-              </b:if>
-            </b:includable>
-            <b:includable id='comments' var='post'>
-              <div class='comments' id='comments'>
-                <a name='comments'/>
-                <b:if cond='data:post.allowComments'>
-                  <h4><data:post.commentLabelFull/></h4>
-                  <div class='comments-content'>
-                    <b:loop values='data:post.comments' var='comment'>
-                      <div class='comment' expr:id='data:comment.anchorName'>
-                        <div class='comment-header'>
-                          <img class='comment-avatar' expr:alt='data:comment.author' expr:src='data:comment.authorAvatarSrc' loading='lazy'/>
-                          <span class='user'>
-                            <b:if cond='data:comment.authorUrl'>
-                              <a expr:href='data:comment.authorUrl' rel='nofollow noopener' target='_blank'><data:comment.author/></a>
-                            <b:else/>
-                              <data:comment.author/>
-                            </b:if>
-                          </span>
-                          <span class='datetime'>
-                            <a expr:href='data:comment.url'><data:comment.timestamp/></a>
-                          </span>
-                          <b:include data='comment' name='commentDeleteIcon'/>
-                        </div>
-                        <b:if cond='data:comment.isDeleted'>
-                          <span class='deleted-comment'><data:comment.body/></span>
-                        <b:else/>
-                          <div class='comment-content'><data:comment.body/></div>
-                        </b:if>
-                      </div>
-                    </b:loop>
-                  </div>
-                  <p class='comment-footer'>
-                    <b:if cond='data:post.allowNewComments'>
-                      <b:include data='post' name='comment-form'/>
-                    <b:else/>
-                      <data:post.noNewCommentsText/>
-                    </b:if>
-                  </p>
-                </b:if>
-              </div>
-            </b:includable>
-            <b:includable id='feedLinks'/>
-            <b:includable id='feedLinksBody' var='links'/>
-            <b:includable id='iframe_comments' var='post'>
-              <b:if cond='data:post.allowComments'>
-                <script expr:src='data:post.commentSrc' type='text/javascript'/>
-                <div class='cmt_iframe_holder'/>
-                <b:if cond='data:post.embedCommentForm == &quot;false&quot;'>
-                  <a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'><data:postCommentMsg/></a>
-                </b:if>
-              </b:if>
-            </b:includable>
-            <b:includable id='mobile-index-post' var='post'/>
-            <b:includable id='mobile-main' var='top'/>
-            <b:includable id='mobile-nextprev'/>
-            <b:includable id='mobile-post' var='post'/>
-            <b:includable id='nextprev'/>
-            <b:includable id='post' var='post'/>
-            <b:includable id='postQuickEdit' var='post'/>
-            <b:includable id='shareButtons' var='post'/>
-            <b:includable id='status-message'/>
-            <b:includable id='threaded-comment-form' var='post'>
-              <div class='comment-form'>
-                <p><data:blogCommentMessage/></p>
-                <data:blogTeamBlogMessage/>
-                <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
-                <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
-                <data:post.cmtfpIframe/>
-                <script type='text/javascript'>
-                  //<![CDATA[
-                  BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
-                  //]]>
-                </script>
-              </div>
-            </b:includable>
-            <b:includable id='threaded_comment_js' var='post'>
-              <script async='async' expr:src='data:post.commentSrc' type='text/javascript'/>
-              <script type='text/javascript'>
-                //<![CDATA[
-                (function() {
-                  var items = <data:post.commentJso/>;
-                  var msgs = <data:post.commentMsgs/>;
-                  var config = <data:post.commentConfig/>;
-                  var cursor = null;
-                  if (items && items.length > 0) {
-                    cursor = parseInt(items[items.length - 1].timestamp) + 1;
-                  }
-                  var bodyFromEntry = function(entry) {
-                    if (entry.gd$extendedProperty) {
-                      for (var k in entry.gd$extendedProperty) {
-                        if (entry.gd$extendedProperty[k].name == 'blogger.contentRemoved') {
-                          return '<span class="deleted-comment">' + entry.content.$t + '</span>';
-                        }
-                      }
-                    }
-                    return entry.content.$t;
-                  };
-                  var parse = function(data) {
-                    cursor = null;
-                    var comments = [];
-                    if (data && data.feed && data.feed.entry) {
-                      for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
-                        var comment = {};
-                        var id = /blog-(\d+).post-(\d+)/.exec(entry.id.$t);
-                        comment.id = id ? id[2] : null;
-                        comment.body = bodyFromEntry(entry);
-                        comment.timestamp = Date.parse(entry.published.$t) + '';
-                        if (entry.author && entry.author.constructor === Array) {
-                          var auth = entry.author[0];
-                          if (auth) {
-                            comment.author = {
-                              name: (auth.name ? auth.name.$t : undefined),
-                              profileUrl: (auth.uri ? auth.uri.$t : undefined),
-                              avatarUrl: (auth.gd$image ? auth.gd$image.src : undefined)
-                            };
-                          }
-                        }
-                        if (entry.link) {
-                          if (entry.link[2]) {
-                            comment.link = comment.permalink = entry.link[2].href;
-                          }
-                          if (entry.link[3]) {
-                            var pid = /.*comments\/default\/(\d+)\?.*/.exec(entry.link[3].href);
-                            if (pid && pid[1]) {
-                              comment.parentId = pid[1];
-                            }
-                          }
-                        }
-                        comment.deleteclass = 'item-control blog-admin';
-                        if (entry.gd$extendedProperty) {
-                          for (var k in entry.gd$extendedProperty) {
-                            if (entry.gd$extendedProperty[k].name == 'blogger.itemClass') {
-                              comment.deleteclass += ' ' + entry.gd$extendedProperty[k].value;
-                            } else if (entry.gd$extendedProperty[k].name == 'blogger.displayTime') {
-                              comment.displayTime = entry.gd$extendedProperty[k].value;
-                            }
-                          }
-                        }
-                        comments.push(comment);
-                      }
-                    }
-                    return comments;
-                  };
-                  var paginator = function(callback) {
-                    if (hasMore()) {
-                      var url = config.feed + '?alt=json&v=2&orderby=published&reverse=false&max-results=50';
-                      if (cursor) {
-                        url += '&published-min=' + new Date(cursor).toISOString();
-                      }
-                      window.bloggercomments = function(data) {
-                        var parsed = parse(data);
-                        cursor = parsed.length < 50 ? null : parseInt(parsed[parsed.length - 1].timestamp) + 1;
-                        callback(parsed);
-                        window.bloggercomments = null;
-                      };
-                      url += '&callback=bloggercomments';
-                      var script = document.createElement('script');
-                      script.type = 'text/javascript';
-                      script.src = url;
-                      document.getElementsByTagName('head')[0].appendChild(script);
-                    }
-                  };
-                  var hasMore = function() {
-                    return !!cursor;
-                  };
-                  var getMeta = function(key, comment) {
-                    if ('iswriter' == key) {
-                      var matches = !!comment.author && comment.author.name == config.authorName && comment.author.profileUrl == config.authorUrl;
-                      return matches ? 'true' : '';
-                    } else if ('deletelink' == key) {
-                      return config.baseUri + '/delete-comment.g?blogID=' + config.blogId + '&postID=' + comment.id;
-                    } else if ('deleteclass' == key) {
-                      return comment.deleteclass;
-                    }
-                    return '';
-                  };
-                  var replybox = null;
-                  var replyUrlParts = null;
-                  var replyParent = undefined;
-                  var onReply = function(commentId, domId) {
-                    if (replybox == null) {
-                      replybox = document.getElementById('comment-editor');
-                      if (replybox != null) {
-                        replybox.height = '250px';
-                        replybox.style.display = 'block';
-                        replyUrlParts = replybox.src.split('#');
-                      }
-                    }
-                    if (replybox && (commentId !== replyParent)) {
-                      replybox.src = '';
-                      document.getElementById(domId).insertBefore(replybox, null);
-                      replybox.src = replyUrlParts[0] + (commentId ? '&parentID=' + commentId : '') + '#' + replyUrlParts[1];
-                      replyParent = commentId;
-                    }
-                  };
-                  var hash = (window.location.hash || '#').substring(1);
-                  var startThread, targetComment;
-                  if (/^comment-form_/.test(hash)) {
-                    startThread = hash.substring('comment-form_'.length);
-                  } else if (/^c[0-9]+$/.test(hash)) {
-                    targetComment = hash.substring(1);
-                  }
-                  var configJso = { 'maxDepth': config.maxThreadDepth };
-                  var provider = {
-                    'id': config.postId,
-                    'data': items,
-                    'loadNext': paginator,
-                    'hasMore': hasMore,
-                    'getMeta': getMeta,
-                    'onReply': onReply,
-                    'rendered': true,
-                    'initComment': targetComment,
-                    'initReplyThread': startThread,
-                    'config': configJso,
-                    'messages': msgs
-                  };
-                  var render = function() {
-                    if (window.goog && window.goog.comments) {
-                      var holder = document.getElementById('comment-holder');
-                      window.goog.comments.render(holder, provider);
-                    }
-                  };
-                  if (window.goog && window.goog.comments) {
-                    render();
-                  } else {
-                    window.goog = window.goog || {};
-                    window.goog.comments = window.goog.comments || {};
-                    window.goog.comments.loadQueue = window.goog.comments.loadQueue || [];
-                    window.goog.comments.loadQueue.push(render);
-                  }
-                })();
-                //]]>
-              </script>
-            </b:includable>
-            <b:includable id='threaded_comments' var='post'>
-              <div class='comments' id='comments'>
-                <a name='threaded_comments'/>
-                <b:if cond='data:post.allowComments'>
-                  <h4><data:post.commentLabelFull/></h4>
-                  <div class='comments-content'>
-                    <b:include cond='data:post.embedCommentForm' data='post' name='threaded_comment_js'/>
-                    <div id='comment-holder'>
-                      <data:post.commentHtml/>
-                    </div>
-                  </div>
-                  <p class='comment-footer'>
-                    <b:if cond='data:post.allowNewComments'>
-                      <b:include data='post' name='threaded-comment-form'/>
-                    <b:else/>
-                      <data:post.noNewCommentsText/>
-                    </b:if>
-                  </p>
-                  <b:if cond='data:showCmtPopup'>
-                    <div id='comment-popup'>
-                      <iframe allowtransparency='true' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'/>
-                    </div>
-                  </b:if>
-                </b:if>
-              </div>
-            </b:includable>
-          </b:widget>
-        </b:section>
+        <aside class='sidebar'>
+          <div class='sidebar-widget'>
+            <h3 class='sidebar-title'>Sidebar</h3>
+            <b:section id='sidebar' class='sidebar-section' showaddelement='yes'>
+              <b:widget id='PopularPosts1' locked='false' title='Popular Posts' type='PopularPosts' visible='true'/>
+              <b:widget id='Label1' locked='false' title='Labels' type='Label' visible='true'/>
+              <b:widget id='BlogArchive1' locked='false' title='Archive' type='BlogArchive' visible='true'/>
+            </b:section>
+          </div>
+        </aside>
       </main>
-
-      <aside class='sidebar'>
-        <div class='sidebar-tabs-wrapper'>
-          <div class='sidebar-tabs' role='tablist'>
-            <button aria-controls='sidebar-panel-populer' aria-selected='true' class='sidebar-tab-btn active' data-tab='populer' id='sidebar-tabbtn-populer' onclick='switchSidebarTab(this, &quot;populer&quot;)' role='tab' type='button'>Populer</button>
-            <button aria-controls='sidebar-panel-terbaru' aria-selected='false' class='sidebar-tab-btn' data-tab='terbaru' id='sidebar-tabbtn-terbaru' onclick='switchSidebarTab(this, &quot;terbaru&quot;)' role='tab' type='button'>Terbaru</button>
-            <button aria-controls='sidebar-panel-kategori' aria-selected='false' class='sidebar-tab-btn' data-tab='kategori' id='sidebar-tabbtn-kategori' onclick='switchSidebarTab(this, &quot;kategori&quot;)' role='tab' type='button'>Kategori</button>
-          </div>
-
-          <!-- Panel: Postingan Populer -->
-          <div aria-labelledby='sidebar-tabbtn-populer' class='sidebar-tab-panel active' data-panel='populer' id='sidebar-panel-populer' role='tabpanel'>
-            <b:section id='sidebar-populer' showelement='yes'>
-              <b:widget id='PopularPosts1' locked='false' title='Postingan Populer' type='PopularPosts' version='1'>
-                <b:widget-settings>
-                  <b:widget-setting name='numItemsToShow'>5</b:widget-setting>
-                  <b:widget-setting name='showThumbnails'>true</b:widget-setting>
-                  <b:widget-setting name='showSnippets'>true</b:widget-setting>
-                  <b:widget-setting name='timeRange'>LAST_WEEK</b:widget-setting>
-                </b:widget-settings>
-                <b:includable id='main'>
-                  <div class='widget-content latest-posts-list'>
-                    <b:loop values='data:posts' var='post'>
-                      <a class='latest-post-item' expr:href='data:post.href ? data:post.href : data:post.url'>
-                        <div class='latest-post-thumb'>
-                          <b:if cond='data:post.thumbnail'>
-                            <img decoding='async' expr:alt='data:post.title' expr:src='resizeImage(data:post.thumbnail, 96, &quot;1:1&quot;)' loading='lazy' onload='this.classList.add(&quot;loaded&quot;)'/>
-                          <b:elseif cond='data:post.thumbnailUrl'/>
-                            <img decoding='async' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy' onload='this.classList.add(&quot;loaded&quot;)'/>
-                          <b:else/>
-                            <svg height='20' viewBox='0 0 24 24' width='20'><path d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z' fill='currentColor'/></svg>
-                          </b:if>
-                        </div>
-                        <div class='latest-post-info'>
-                          <span class='latest-post-title'><data:post.title/></span>
-                          <b:if cond='data:post.snippet'>
-                            <span class='latest-post-date'><data:post.snippet/></span>
-                          </b:if>
-                        </div>
-                      </a>
-                    </b:loop>
-                  </div>
-                </b:includable>
-              </b:widget>
-            </b:section>
-          </div>
-
-          <!-- Panel: Postingan Terbaru -->
-          <div aria-labelledby='sidebar-tabbtn-terbaru' class='sidebar-tab-panel' data-panel='terbaru' id='sidebar-panel-terbaru' role='tabpanel'>
-            <div class='widget-content latest-posts' id='latest-posts-container'>
-              <div class='sidebar-loading'>Memuat...</div>
-            </div>
-          </div>
-
-          <!-- Panel: Kategori -->
-          <div aria-labelledby='sidebar-tabbtn-kategori' class='sidebar-tab-panel' data-panel='kategori' id='sidebar-panel-kategori' role='tabpanel'>
-            <b:section id='sidebar-kategori' showelement='yes'>
-              <b:widget id='Label1' locked='false' title='Kategori' type='Label' version='1'>
-                <b:widget-settings>
-                  <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
-                  <b:widget-setting name='display'>LIST</b:widget-setting>
-                  <b:widget-setting name='selectedLabelsList'/>
-                  <b:widget-setting name='showType'>ALL</b:widget-setting>
-                  <b:widget-setting name='showFreqNumbers'>true</b:widget-setting>
-                </b:widget-settings>
-                <b:includable id='main'>
-                  <div class='widget-content category-list'>
-                    <b:loop values='data:labels' var='label'>
-                      <a class='category-pill' expr:href='data:label.url'>
-                        <span class='category-pill-name'><data:label.name/></span>
-                        <b:if cond='data:label.count'>
-                          <span class='category-pill-count'><data:label.count/></span>
-                        </b:if>
-                      </a>
-                    </b:loop>
-                  </div>
-                </b:includable>
-              </b:widget>
-            </b:section>
-          </div>
-        </div>
-
-        <div class='ad-banner ad-sidebar'><script async='async' data-cfasync='false' src='https://recognitiondesperation.com/2a19a6a61fce736a8e503fba4d62f3ef/invoke.js'/>
-<div id='container-2a19a6a61fce736a8e503fba4d62f3ef'/>
-        </div>
-      </aside>
-
     </div>
 
-    <!-- Footer -->
-    <footer>
-      <ul class='footer-links'>
-        <li><a href='/p/tentang.html'>Tentang</a></li>
-        <li><a href='/p/kontak.html'>Kontak</a></li>
-        <li><a href='/p/disclaimer.html'>Disclaimer</a></li>
-        <li><a href='/p/kebijakan-privasi.html'>Kebijakan Privasi</a></li>
-        <li><a href='/p/sitemap.html'>Sitemap</a></li>
-      </ul>
-      <p>&#169; <data:blog.title/>. Hak Cipta Dilindungi.</p>
-    </footer>
-  </div>
-
-  <!-- Tombol Back to Top -->
-  <button aria-label='Kembali ke atas' id='back-to-top' onclick='scrollToTop()' title='Ke Atas'>
-    <svg aria-hidden='true' height='24' viewBox='0 0 24 24' width='24'><path d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z' fill='currentColor'/></svg>
-  </button>
-
-  <script>//<![CDATA[
-    function updateThemeUI(isDark) {
-      var toggleBtn = document.querySelector('.dark-toggle');
-      if (toggleBtn) {
-        if (isDark) {
-          toggleBtn.innerHTML = '<svg height="18" width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
-          toggleBtn.setAttribute('aria-label', 'Aktifkan mode terang');
-          toggleBtn.setAttribute('title', 'Aktifkan mode terang');
-        } else {
-          toggleBtn.innerHTML = '<svg height="18" width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-          toggleBtn.setAttribute('aria-label', 'Aktifkan mode gelap');
-          toggleBtn.setAttribute('title', 'Aktifkan mode gelap');
-        }
-      }
-    }
-
-    function toggleDarkMode() {
-      var isDark = document.body.classList.toggle('dark-mode');
-      document.documentElement.classList.toggle('dark-mode-preload', isDark);
-      try {
-        localStorage.setItem('theme-preference', isDark ? 'dark' : 'light');
-      } catch(e) {}
-      updateThemeUI(isDark);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      var savedTheme = null;
-      try {
-        savedTheme = localStorage.getItem('theme-preference');
-      } catch(e) {}
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        document.documentElement.classList.add('dark-mode-preload');
-        updateThemeUI(true);
-      } else {
-        document.body.classList.remove('dark-mode');
-        document.documentElement.classList.remove('dark-mode-preload');
-        updateThemeUI(false);
-      }
-    });
-
-    function toggleMobileMenu(btn) {
-      var nav = document.querySelector('nav');
-      if (nav) {
-        var active = nav.classList.toggle('active');
-        if (btn) {
-          btn.setAttribute('aria-expanded', active ? 'true' : 'false');
-        }
-      }
-    }
-
-    function switchSidebarTab(btn, tab) {
-      var wrap = btn.closest('.sidebar-tabs-wrapper');
-      if (!wrap) return;
-      var btns = wrap.querySelectorAll('.sidebar-tab-btn');
-      var panels = wrap.querySelectorAll('.sidebar-tab-panel');
-      for (var i = 0; i < btns.length; i++) {
-        btns[i].classList.remove('active');
-        btns[i].setAttribute('aria-selected', 'false');
-      }
-      for (var j = 0; j < panels.length; j++) {
-        panels[j].classList.remove('active');
-      }
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-      var panel = wrap.querySelector('.sidebar-tab-panel[data-panel="' + tab + '"]');
-      if (panel) panel.classList.add('active');
-      if (tab === 'terbaru') {
-        loadLatestSidebarPosts();
-      }
-    }
-
-    var latestSidebarPostsLoaded = false;
-    function loadLatestSidebarPosts() {
-      if (latestSidebarPostsLoaded) return;
-      latestSidebarPostsLoaded = true;
-      var script = document.createElement('script');
-      script.src = '/feeds/posts/summary?alt=json-in-script&max-results=6&callback=renderLatestSidebarPosts';
-      script.onerror = function () {
-        var container = document.getElementById('latest-posts-container');
-        if (container) container.innerHTML = '<p class="sidebar-empty">Gagal memuat postingan terbaru.</p>';
-      };
-      document.body.appendChild(script);
-    }
-
-    function renderLatestSidebarPosts(data) {
-      var container = document.getElementById('latest-posts-container');
-      if (!container) return;
-      container.innerHTML = '';
-
-      if (!data.feed || !data.feed.entry || data.feed.entry.length === 0) {
-        container.innerHTML = '<p class="sidebar-empty">Belum ada artikel.</p>';
-        return;
-      }
-
-      var list = document.createElement('div');
-      list.className = 'latest-posts-list';
-
-      for (var i = 0; i < data.feed.entry.length; i++) {
-        var entry = data.feed.entry[i];
-        var title = entry.title.$t;
-        var url = '';
-        for (var j = 0; j < entry.link.length; j++) {
-          if (entry.link[j].rel === 'alternate') {
-            url = entry.link[j].href;
-            break;
-          }
+    <script><![CDATA[
+      document.addEventListener('DOMContentLoaded', function () {
+        var body = document.body;
+        var progressBar = document.getElementById('progressBar');
+        var themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) {
+          themeToggle.addEventListener('click', function () {
+            body.classList.toggle('dark-mode');
+            document.documentElement.classList.toggle('dark-mode');
+            try {
+              localStorage.setItem('theme-preference', document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light');
+            } catch (e) {}
+          });
         }
 
-        var thumbUrl = '';
-        if (entry.media$thumbnail && entry.media$thumbnail.url) {
-          thumbUrl = entry.media$thumbnail.url.replace('/s72-c/', '/s96-c/');
+        var isDarkPreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var savedTheme = null;
+        try {
+          savedTheme = localStorage.getItem('theme-preference');
+        } catch (e) {}
+
+        if (savedTheme === 'dark' || (!savedTheme && isDarkPreferred)) {
+          body.classList.add('dark-mode');
+          document.documentElement.classList.add('dark-mode');
         }
 
-        var dateLabel = '';
-        if (entry.published && entry.published.$t) {
-          var d = new Date(entry.published.$t);
-          if (!isNaN(d.getTime())) {
-            dateLabel = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-          }
+        function updateProgress() {
+          if (!progressBar) return;
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          var ratio = maxScroll > 0 ? (scrollTop / maxScroll) * 100 : 0;
+          progressBar.style.width = Math.min(Math.max(ratio, 0), 100) + '%';
         }
 
-        var a = document.createElement('a');
-        a.className = 'latest-post-item';
-        a.href = url;
+        updateProgress();
+        window.addEventListener('scroll', updateProgress, { passive: true });
 
-        var thumbDiv = document.createElement('div');
-        thumbDiv.className = 'latest-post-thumb';
-        if (thumbUrl) {
-          var img = document.createElement('img');
-          img.src = thumbUrl;
-          img.alt = title;
-          img.setAttribute('decoding', 'async');
-          img.loading = 'lazy';
-          img.onload = function () { this.classList.add('loaded'); };
-          thumbDiv.appendChild(img);
-        } else {
-          thumbDiv.innerHTML = '<svg height="20" viewBox="0 0 24 24" width="20"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" fill="currentColor"/></svg>';
+        var tocToggle = document.querySelector('.toc-toggle-btn');
+        var tocContent = document.querySelector('.toc-content');
+        if (tocToggle && tocContent) {
+          tocToggle.addEventListener('click', function () {
+            tocContent.classList.toggle('collapsed');
+            var isCollapsed = tocContent.classList.contains('collapsed');
+            tocToggle.textContent = isCollapsed ? 'Tampilkan TOC' : 'Sembunyikan TOC';
+          });
         }
 
-        var infoDiv = document.createElement('div');
-        infoDiv.className = 'latest-post-info';
-
-        var titleSpan = document.createElement('span');
-        titleSpan.className = 'latest-post-title';
-        titleSpan.textContent = title;
-        infoDiv.appendChild(titleSpan);
-
-        if (dateLabel) {
-          var dateSpan = document.createElement('span');
-          dateSpan.className = 'latest-post-date';
-          dateSpan.textContent = dateLabel;
-          infoDiv.appendChild(dateSpan);
-        }
-
-        a.appendChild(thumbDiv);
-        a.appendChild(infoDiv);
-        list.appendChild(a);
-      }
-
-      container.appendChild(list);
-    }
-
-    function toggleDropdown(el) {
-      var parent = el.closest('.dropdown');
-      if (!parent) return;
-      var menu = parent.querySelector('.dropdown-menu');
-      if (!menu) return;
-
-      var isOpen = menu.classList.contains('open');
-      var openMenus = document.querySelectorAll('.dropdown-menu.open');
-      var openBtns = document.querySelectorAll('.nav-dropdown-btn[aria-expanded="true"]');
-      
-      for (var i = 0; i < openMenus.length; i++) {
-        openMenus[i].classList.remove('open');
-      }
-      for (var k = 0; k < openBtns.length; k++) {
-        openBtns[k].setAttribute('aria-expanded', 'false');
-      }
-
-      if (!isOpen) {
-        menu.classList.add('open');
-        el.setAttribute('aria-expanded', 'true');
-      }
-    }
-
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.dropdown')) {
-        var openMenus = document.querySelectorAll('.dropdown-menu.open');
-        var openBtns = document.querySelectorAll('.nav-dropdown-btn[aria-expanded="true"]');
-        for (var i = 0; i < openMenus.length; i++) {
-          openMenus[i].classList.remove('open');
-        }
-        for (var k = 0; k < openBtns.length; k++) {
-          openBtns[k].setAttribute('aria-expanded', 'false');
-        }
-      }
-      if (!e.target.closest('nav') && !e.target.closest('.mobile-menu-btn')) {
-        var nav = document.querySelector('nav');
-        var mobileBtn = document.querySelector('.mobile-menu-btn');
-        if (nav) nav.classList.remove('active');
-        if (mobileBtn) mobileBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    function scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    var searchTimer;
-    var currentSearchContainerId = 'live-search-results';
-    var searchRequestId = 0;
-    var activeSearchScript = null;
-
-    function doLiveSearch(target) {
-      clearTimeout(searchTimer);
-      currentSearchContainerId = (target === 'mobile') ? 'live-search-results-mobile' : 'live-search-results';
-      
-      var inputId = (target === 'mobile') ? 'search-input-mobile' : 'search-input';
-      var inputElem = document.getElementById(inputId);
-      if (!inputElem) return;
-
-      var query = inputElem.value.trim();
-      var resultsContainer = document.getElementById(currentSearchContainerId);
-
-      if (query.length < 2) {
-        if (resultsContainer) {
-          resultsContainer.style.display = 'none';
-          resultsContainer.innerHTML = '';
-        }
-        return;
-      }
-
-      searchTimer = setTimeout(function() {
-        if (activeSearchScript && activeSearchScript.parentNode) {
-          activeSearchScript.parentNode.removeChild(activeSearchScript);
-        }
-        var thisRequestId = ++searchRequestId;
-        var script = document.createElement('script');
-        script.src = '/feeds/posts/summary?alt=json-in-script&q=' + encodeURIComponent(query) + '&max-results=5&callback=showSearchResults';
-        script.setAttribute('data-request-id', thisRequestId);
-        activeSearchScript = script;
-        document.body.appendChild(script);
-      }, 300);
-    }
-
-    function showSearchResults(data) {
-      var resultsContainer = document.getElementById(currentSearchContainerId);
-      if (!resultsContainer) return;
-      
-      resultsContainer.innerHTML = '';
-      
-      if (data.feed && data.feed.entry && data.feed.entry.length > 0) {
-        for (var i = 0; i < data.feed.entry.length; i++) {
-          var entry = data.feed.entry[i];
-          var title = entry.title.$t;
-          var url = '';
-          
-          for (var j = 0; j < entry.link.length; j++) {
-            if (entry.link[j].rel === 'alternate') {
-              url = entry.link[j].href;
-              break;
-            }
-          }
-
-          var link = document.createElement('a');
-          link.href = url;
-          link.textContent = title;
-          resultsContainer.appendChild(link);
-        }
-      } else {
-        resultsContainer.innerHTML = '<p>Artikel tidak ditemukan.</p>';
-      }
-      resultsContainer.style.display = 'block';
-    }
-
-    document.addEventListener('click', function(e) {
-      var searchContainers = document.querySelectorAll('.search-container');
-      var resultsContainers = document.querySelectorAll('.live-search-results');
-      
-      var isInsideSearch = false;
-      searchContainers.forEach(function(container) {
-        if (container.contains(e.target)) {
-          isInsideSearch = true;
-        }
-      });
-
-      if (!isInsideSearch) {
-        resultsContainers.forEach(function(res) {
-          res.style.display = 'none';
-        });
-      }
-    });
-
-    window.onscroll = function() {
-      var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-      var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      var scrolled = (winScroll / height) * 100;
-      var progressBar = document.getElementById("myBar");
-      if (progressBar) {
-        progressBar.style.width = scrolled + "%";
-      }
-
-      var topBtn = document.getElementById("back-to-top");
-      if (topBtn) {
-        if (winScroll > 300) {
-          topBtn.classList.add("show");
-        } else {
-          topBtn.classList.remove("show");
-        }
-      }
-    };
-
-    function calculateReadingTime() {
-      var postBody = document.getElementById('post-body');
-      var readingTimeElem = document.getElementById('reading-time');
-      if (postBody && readingTimeElem) {
-        var text = postBody.innerText || postBody.textContent || '';
-        var words = text.trim().split(/\s+/).filter(function(word) { return word.length > 0; });
-        var wordCount = words.length;
-        var minutes = Math.max(1, Math.ceil(wordCount / 200));
-        var iconSvg = '<svg height="16" viewBox="0 0 24 24" width="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ';
-        readingTimeElem.innerHTML = iconSvg + minutes + ' min baca';
-      }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', calculateReadingTime);
-    } else {
-      calculateReadingTime();
-    }
-
-    function generateTOC() {
-      var postBody = document.getElementById('post-body');
-      if (!postBody) return;
-
-      var headings = postBody.querySelectorAll('h2, h3, h4');
-      if (headings.length < 2) return;
-
-      var tocContainer = document.createElement('div');
-      tocContainer.className = 'toc-box';
-
-      var tocHeader = document.createElement('div');
-      tocHeader.className = 'toc-header';
-
-      var tocTitle = document.createElement('div');
-      tocTitle.className = 'toc-title';
-      tocTitle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Daftar Isi';
-
-      var toggleBtn = document.createElement('button');
-      toggleBtn.className = 'toc-toggle-btn';
-      toggleBtn.innerHTML = '[ Sembunyikan ]';
-
-      tocHeader.appendChild(tocTitle);
-      tocHeader.appendChild(toggleBtn);
-
-      var tocContent = document.createElement('div');
-      var isMobileView = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-      tocContent.className = isMobileView ? 'toc-content collapsed' : 'toc-content';
-      toggleBtn.innerHTML = isMobileView ? '[ Tampilkan ]' : '[ Sembunyikan ]';
-
-      var tocList = document.createElement('ul');
-      tocList.className = 'toc-list';
-
-      headings.forEach(function(heading, index) {
-        var id = heading.id || 'toc-heading-' + index;
-        heading.id = id;
-
-        var li = document.createElement('li');
-        var tagName = heading.tagName.toLowerCase();
-        li.className = 'toc-depth-' + tagName;
-
-        var link = document.createElement('a');
-        link.href = '#' + id;
-        link.textContent = heading.textContent;
-
-        link.addEventListener('click', function(e) {
-          e.preventDefault();
-          heading.scrollIntoView({ behavior: 'smooth' });
-          history.pushState(null, null, '#' + id);
+        document.querySelectorAll('.sidebar-tab-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var panelName = btn.getAttribute('data-tab');
+            document.querySelectorAll('.sidebar-tab-btn').forEach(function (el) {
+              el.classList.toggle('active', el === btn);
+            });
+            document.querySelectorAll('.sidebar-tab-panel').forEach(function (panel) {
+              panel.classList.toggle('active', panel.getAttribute('data-panel') === panelName);
+            });
+          });
         });
 
-        li.appendChild(link);
-        tocList.appendChild(li);
-      });
+        document.querySelectorAll('.dropdown').forEach(function (item) {
+          var button = item.querySelector('.nav-dropdown-btn');
+          var menu = item.querySelector('.dropdown-menu');
+          if (!button || !menu) return;
+          button.addEventListener('click', function (event) {
+            event.preventDefault();
+            var isOpen = menu.classList.contains('open');
+            document.querySelectorAll('.dropdown-menu').forEach(function (el) {
+              el.classList.remove('open');
+            });
+            menu.classList.toggle('open', !isOpen);
+          });
+        });
 
-      tocContent.appendChild(tocList);
-      tocContainer.appendChild(tocHeader);
-      tocContainer.appendChild(tocContent);
-
-      headings[0].parentNode.insertBefore(tocContainer, headings[0]);
-
-      tocHeader.addEventListener('click', function() {
-        var isCollapsed = tocContent.classList.toggle('collapsed');
-        toggleBtn.innerHTML = isCollapsed ? '[ Tampilkan ]' : '[ Sembunyikan ]';
-      });
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', generateTOC);
-    } else {
-      generateTOC();
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      var postBody = document.getElementById('post-body');
-      if (postBody) {
-        var images = postBody.getElementsByTagName('img');
-        for (var i = 0; i < images.length; i++) {
-          images[i].setAttribute('loading', 'lazy');
-          images[i].setAttribute('decoding', 'async');
-        }
-      }
-    });
-
-    function initRelatedPosts() {
-      var postBody = document.getElementById('post-body');
-      if (!postBody) return;
-
-      var paragraphs = [];
-      for (var i = 0; i < postBody.children.length; i++) {
-        if (postBody.children[i].tagName === 'P') {
-          paragraphs.push(postBody.children[i]);
-        }
-      }
-
-      var maxInsertions;
-      if (paragraphs.length < 3) { maxInsertions = 0; }
-      else if (paragraphs.length < 6) { maxInsertions = 1; }
-      else if (paragraphs.length < 9) { maxInsertions = 2; }
-      else { maxInsertions = 3; }
-
-      if (maxInsertions === 0) return;
-
-      window.__relatedParagraphs = paragraphs;
-      window.__relatedMaxInsertions = maxInsertions;
-      loadRelatedPosts(false);
-    }
-
-    var relatedPostsFallbackTried = false;
-
-    function loadRelatedPosts(forceFallback) {
-      var postBody = document.getElementById('post-body');
-      if (!postBody) return;
-
-      var label = postBody.getAttribute('data-post-label');
-      var useLabel = label && !forceFallback;
-
-      var script = document.createElement('script');
-      script.src = useLabel
-        ? '/feeds/posts/summary/-/' + encodeURIComponent(label) + '?alt=json-in-script&max-results=10&callback=renderRelatedPosts'
-        : '/feeds/posts/summary?alt=json-in-script&max-results=10&callback=renderRelatedPosts';
-      document.body.appendChild(script);
-    }
-
-    function pickRandomInsertionIndexes(totalParagraphs, count) {
-      var indexes = [];
-      var used = {};
-      for (var s = 0; s < count; s++) {
-        var start = Math.floor((totalParagraphs * s) / count);
-        var end = Math.floor((totalParagraphs * (s + 1)) / count) - 1;
-        if (start <= 0) start = Math.min(1, totalParagraphs - 2);
-        if (end >= totalParagraphs - 1) end = totalParagraphs - 2;
-        if (end < start) end = start;
-        var idx = start + Math.floor(Math.random() * (end - start + 1));
-        while (used[idx] && idx < totalParagraphs - 2) { idx++; }
-        used[idx] = true;
-        indexes.push(idx);
-      }
-      return indexes;
-    }
-
-    function renderRelatedPosts(data) {
-      var postBody = document.getElementById('post-body');
-      var paragraphs = window.__relatedParagraphs;
-      var maxInsertions = window.__relatedMaxInsertions;
-      if (!postBody || !paragraphs || !maxInsertions) return;
-
-      var currentUrl = postBody.getAttribute('data-post-url');
-      var label = postBody.getAttribute('data-post-label');
-      var entries = (data.feed && data.feed.entry) ? data.feed.entry : [];
-      var seenUrls = {};
-      var candidates = [];
-
-      for (var i = 0; i < entries.length; i++) {
-        var entry = entries[i];
-        var url = '';
-        for (var j = 0; j < entry.link.length; j++) {
-          if (entry.link[j].rel === 'alternate') {
-            url = entry.link[j].href;
-            break;
+        document.addEventListener('click', function (event) {
+          if (!event.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown-menu').forEach(function (el) {
+              el.classList.remove('open');
+            });
           }
-        }
-        if (!url || url === currentUrl || seenUrls[url]) continue;
-        seenUrls[url] = true;
-        candidates.push({ title: entry.title.$t, url: url });
-      }
-
-      if (candidates.length === 0) {
-        if (label && !relatedPostsFallbackTried) {
-          relatedPostsFallbackTried = true;
-          loadRelatedPosts(true);
-        }
-        return;
-      }
-
-      for (var k = candidates.length - 1; k > 0; k--) {
-        var r = Math.floor(Math.random() * (k + 1));
-        var tmp = candidates[k]; candidates[k] = candidates[r]; candidates[r] = tmp;
-      }
-
-      var picks = candidates.slice(0, Math.min(maxInsertions, candidates.length));
-      var positions = pickRandomInsertionIndexes(paragraphs.length, picks.length);
-
-      for (var p = 0; p < picks.length; p++) {
-        var targetParagraph = paragraphs[positions[p]];
-        if (!targetParagraph || !targetParagraph.parentNode) continue;
-
-        var inline = document.createElement('p');
-        inline.className = 'related-posts-inline';
-        var labelSpan = document.createElement('span');
-        labelSpan.className = 'related-posts-label';
-        labelSpan.textContent = 'Baca juga: ';
-        var a = document.createElement('a');
-        a.href = picks[p].url;
-        a.textContent = picks[p].title;
-        inline.appendChild(labelSpan);
-        inline.appendChild(a);
-
-        targetParagraph.parentNode.insertBefore(inline, targetParagraph.nextSibling);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', initRelatedPosts);
-  //]]></script>
-</body>
+        });
+      });
+    ]]></script>
+  </body>
 </html>
